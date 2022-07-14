@@ -1,6 +1,6 @@
 namespace ClassesAndInterfaces.Interface;
 
-public class Rectangle : IShape
+public class Rectangle : IShape // , Other interfaces
 {
     private readonly double _width;
     private readonly double _height;
