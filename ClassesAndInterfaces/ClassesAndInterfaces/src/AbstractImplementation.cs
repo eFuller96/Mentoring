@@ -4,7 +4,7 @@ namespace ClassesAndInterfaces;
 
 public static class AbstractImplementation
 {
-    public static void Get()
+    public static void GetShapes()
     {
         // abstract implementations
         var rectangle = new Rectangle(x: 5.3, y: 2.3, width: 9, height: 5);
@@ -19,5 +19,13 @@ public static class AbstractImplementation
 
             Console.WriteLine($"Area of {shape.GetType()} is {shape.GetArea()}");
         }
+    }
+    
+    public static void GetAnimals()
+    {
+        // todo - create classes of different animals to inherit a common abstract class.
+        // Create a method to return the animal noise. e.g. Console.Writeline("Woof");
+        
+        Console.WriteLine("todo - print animal noises!");
     }
 }

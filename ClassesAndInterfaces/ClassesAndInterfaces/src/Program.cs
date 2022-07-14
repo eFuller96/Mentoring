@@ -2,5 +2,7 @@
 
 using ClassesAndInterfaces;
 
-AbstractImplementation.Get();
-InterfaceImplementation.Get();
+// AbstractImplementation.GetShapes();
+// InterfaceImplementation.GetShapes();
+AbstractImplementation.GetAnimals();
+InterfaceImplementation.GetAnimals();
