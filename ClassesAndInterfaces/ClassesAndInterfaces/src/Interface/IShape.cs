@@ -1,6 +1,4 @@
-﻿using ClassesAndInterfaces.Abstract;
-
-namespace ClassesAndInterfaces.Interface;
+﻿namespace ClassesAndInterfaces.Interface;
 
 public interface IShape
 {
