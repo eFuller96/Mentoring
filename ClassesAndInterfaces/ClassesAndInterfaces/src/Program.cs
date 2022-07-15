@@ -5,4 +5,4 @@ using ClassesAndInterfaces;
 // AbstractImplementation.GetShapes();
 // InterfaceImplementation.GetShapes();
 AbstractImplementation.GetAnimals();
-InterfaceImplementation.GetAnimals();
+//InterfaceImplementation.GetAnimals();
