@@ -1,7 +1,7 @@
 # Todo API Application 
 
  ## Running a web application 
-`launchSettings.json` - this is a file you will see in any ASP.NET Core application. It is used to describe how to start an application, and holds configuration details. It is for development purposes only, and not used in production. Within the file, you will see a section named `iisSettings` - these are specific to debugging the application under IIS or IIS Express. You will also see a `profiles` section. This contains debug profiles - you will see one named the title of the application, and one named IIS Express. You can select which profile you want to use to determine how to start your application.
+`launchSettings.json` - this is a file you will see in any [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-6.0) application. It is used to describe how to start an application, and holds configuration details. It is for development purposes only, and not used in production. Within the file, you will see a section named `iisSettings` - these are specific to debugging the application under IIS or IIS Express. You will also see a `profiles` section. This contains debug profiles - you will see one named the title of the application, and one named IIS Express. You can select which profile you want to use to determine how to start your application.
 
 ### Steps
 1. Clone a repository from GitHub: https://github.com/eFuller96/Mentoring.git
