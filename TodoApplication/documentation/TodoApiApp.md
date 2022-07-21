@@ -1,7 +1,9 @@
 # Todo API Application 
 
  ## Running a web application 
+`launchSettings.json` - this is a file you will see in any ASP.NET Core application. It is used to describe how to start an application, and holds configuration details. It is for development purposes only, and not used in production. Within the file, you will see a section named `iisSettings` - these are specific to debugging the application under IIS or IIS Express. You will also see a `profiles` section. This contains debug profiles - you will see one named the title of the application, and one named IIS Express. You can select which profile you want to use to determine how to start your application.
 
+### Steps
 1. Clone a repository from GitHub: https://github.com/eFuller96/todo-application.git 
 1. Switch to a new branch called “dev” 
 1. Open TodoApplication.sln and run from within Visual Studio 
@@ -24,7 +26,9 @@
 
 ![mvc-diagram](https://miro.medium.com/max/1400/1*dmXICCnEuM8toPGdwsJ-Xg.png)
 
-We will explore attributes belonging to the [MVC namespace](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc?view=aspnetcore-6.0) in this tutorial. These attributes configure the behavior of web API controllers and action methods. 
+We will explore attributes belonging to the [MVC namespace](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc?view=aspnetcore-6.0) in this tutorial. These attributes configure the behavior of web API controllers and action methods.
+
+### Steps
 1. Within our web app, we will be using the ASP.NET Core MVC framework. Check the first line within TodoListController.cs and temporarily delete it. Observe the errors, then put it back 
 1. Create a Model for a TodoItem 
     1. Add new directory called Models within the project 
