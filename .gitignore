@@ -1,6 +1,7 @@
 ClassesAndInterfaces/ClassesAndInterfaces/.idea/
-ClassesAndInterfaces/.idea/
 ClassesAndInterfaces/ClassesAndInterfaces/obj/
-ClassesAndInterfaces/obj/
 ClassesAndInterfaces/ClassesAndInterfaces/bin/
-ClassesAndInterfaces/bin/
+
+/*/obj
+/*/bin
+/*/.idea
