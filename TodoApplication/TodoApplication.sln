@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApplication", "src/TodoApplication.csproj", "{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7E65C8B4-6AA0-44CC-B50D-561C5EC26DC5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{B8ACBC28-A2A6-460F-9E34-7DF35A71F3F3}"
+	ProjectSection(SolutionItems) = preProject
+		documentation\TodoApiApp.md = documentation\TodoApiApp.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D} = {7E65C8B4-6AA0-44CC-B50D-561C5EC26DC5}
+	EndGlobalSection
+EndGlobal
