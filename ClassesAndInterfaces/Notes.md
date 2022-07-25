@@ -70,4 +70,19 @@ IS THE SAME AS
 
 public string Name { get; set; }
 https://www.geeksforgeeks.org/c-sharp-class-and-object/?ref=lbp
+
+## Other notes
+
+private string _name;
+
+public string Name
+{
+    get { return _type; }
+    set { _type = value; }
+}
+
+IS THE SAME AS
+
+public string Name { get; set; }
+https://www.geeksforgeeks.org/c-sharp-class-and-object/?ref=lbp
 https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers
