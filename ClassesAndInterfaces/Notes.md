@@ -70,4 +70,12 @@ IS THE SAME AS
 
 public string Name { get; set; }
 https://www.geeksforgeeks.org/c-sharp-class-and-object/?ref=lbp
-https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers
+
+## More heritance notes
+- You can only inherit one class 
+- You can implement multiple interfaces in one class
+- https://docs.microsoft.com/es-es/dotnet/csharp/fundamentals/tutorials/inheritance
+
+
+## QUESTIONS
+- In IShape, DrawShape is not an implementation? (we shouldn't implement in interfaces)
