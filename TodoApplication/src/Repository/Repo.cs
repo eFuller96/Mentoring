@@ -48,7 +48,10 @@ public sealed class Repo // singleton class (only called once)
         for (int i = 0; i < ToDoItems.Count; i++)
         {
             if (ToDoItems[i].Id == updatedItem.Id)
+            {
+                updatedItem.Position = ToDoItems[i].Position;
                 ToDoItems[i] = updatedItem;
+            }
         }
     }
     public ToDoItem? Delete(Guid id)
