@@ -10,20 +10,19 @@ namespace TodoApplication.Controllers;
 [Route("[controller]")]
 public class TodoListController : ControllerBase
 {
-    // check errors and http status
 
     public TodoListController()
     {
     }
 
-    // READ
+
     [HttpGet("GetTodoList")]
     public IActionResult Get()
     {
         return Ok(Repo.Instance.Get());
     }
 
-    // CREATE
+
     [HttpPost("AddItem")]
     public ToDoItem Add([FromBody]ToDoItem newItem)
     {
@@ -31,7 +30,7 @@ public class TodoListController : ControllerBase
         return newItem;
     }
 
-    // READ
+
     [HttpGet("GetItem")]
     public IActionResult GetItem(Guid id)
     {
@@ -41,7 +40,7 @@ public class TodoListController : ControllerBase
         return Ok(resultItem);
     }
 
-    // UPDATE
+
     [HttpPut("UpdateItem")]
     public IActionResult Update([FromBody] ToDoItem updatedItem)
     {
@@ -49,7 +48,7 @@ public class TodoListController : ControllerBase
         return Ok(Repo.Instance.GetItem(updatedItem.Id));
     }
 
-    // DELETE
+
     [HttpDelete("DeleteItem")]
     public IActionResult Delete(Guid id)
     {
