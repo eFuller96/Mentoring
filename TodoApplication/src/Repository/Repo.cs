@@ -51,7 +51,7 @@ public sealed class Repo // singleton class (only called once)
                 ToDoItems[i] = updatedItem;
         }
     }
-    public ToDoItem Delete(Guid id)
+    public ToDoItem? Delete(Guid id)
     {
         ToDoItem deletedItem = null;
         for (int i = 0; i < ToDoItems.Count; i++)

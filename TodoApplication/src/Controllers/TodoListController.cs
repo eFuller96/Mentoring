@@ -53,7 +53,9 @@ public class TodoListController : ControllerBase
     [HttpDelete("DeleteItem")]
     public IActionResult Delete(Guid id)
     {
-        ToDoItem itemtoDelete = Repo.Instance.Delete(id);
+        ToDoItem? itemtoDelete = Repo.Instance.Delete(id);
+        if (itemtoDelete == null)
+            return NotFound();
         return Ok(itemtoDelete);
     }
 
