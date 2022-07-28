@@ -2,11 +2,9 @@ using TodoApplication.Models;
 
 namespace TodoApplication.Repository;
 
-
-// singleton class (only called once)
-public sealed class Repo
+public sealed class Repo // singleton class (only called once)
 {
-    
+
     private static readonly string[] Items = new[] { "Chores", "Shopping", "Write a web app API" };
 
     public List<ToDoItem> ToDoItems;
@@ -36,10 +34,11 @@ public sealed class Repo
 
     public void Add(ToDoItem newItem)
     {
+        newItem.Position = ToDoItems.Count + 1;
         ToDoItems.Add(newItem);
     }
     
-    public ToDoItem GetItem(Guid id)
+    public ToDoItem? GetItem(Guid id)
     {
         return ToDoItems.Find(x => x.Id == id);
     }

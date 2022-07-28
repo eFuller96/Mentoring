@@ -33,7 +33,7 @@ public class TodoListController : ControllerBase
 
     // READ
     [HttpGet("GetItem")]
-    public IActionResult GetItem(Guid id) //POSTMAN?????
+    public IActionResult GetItem(Guid id)
     {
         ToDoItem? resultItem = Repo.Instance.GetItem(id);
         if (resultItem == null)
