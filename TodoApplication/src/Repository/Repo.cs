@@ -7,30 +7,28 @@ public sealed class Repo // singleton class (only called once)
 
     private static readonly string[] Items = new[] { "Chores", "Shopping", "Write a web app API" };
 
-    public List<ToDoItem> ToDoItems;
+    private List<ToDoItem> _toDoItems;
+    public List<ToDoItem> ToDoItems
+    {
+        set => _toDoItems = value;
+        get => _toDoItems;
+    }
 
     private readonly static Repo _instance = new ();
     private Repo()
     {
-        if (ToDoItems == null)
+        _toDoItems = new List<ToDoItem>();
+        int i = 1;
+        foreach (string item in Items)
         {
-            ToDoItems = new List<ToDoItem>();
-            int i = 1;
-            foreach (string item in Items)
-            {
-                ToDoItem newItem = new(i, Guid.NewGuid(), item, false);
-                ToDoItems.Add(newItem);
-                i++;
-            }
+            ToDoItem newItem = new(i, Guid.NewGuid(), item, false);
+            _toDoItems.Add(newItem);
+            i++;
         }
     }
 
     public static Repo Instance => _instance;
 
-    public List<ToDoItem> Get()
-    {
-        return ToDoItems;
-    }
 
     public void Add(ToDoItem newItem)
     {

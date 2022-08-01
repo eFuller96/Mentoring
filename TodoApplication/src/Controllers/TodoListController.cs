@@ -19,7 +19,7 @@ public class TodoListController : ControllerBase
     [HttpGet("GetTodoList")]
     public IActionResult Get()
     {
-        return Ok(Repo.Instance.Get());
+        return Ok(Repo.Instance.ToDoItems);
     }
 
 
