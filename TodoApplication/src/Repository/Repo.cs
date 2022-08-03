@@ -7,22 +7,17 @@ public sealed class Repo // singleton class (only called once)
 
     private static readonly string[] Items = new[] { "Chores", "Shopping", "Write a web app API" };
 
-    private List<ToDoItem> _toDoItems;
-    public List<ToDoItem> ToDoItems
-    {
-        set => _toDoItems = value;
-        get => _toDoItems;
-    }
+    public Dictionary<Guid, ToDoItem> ToDoItemsDictionary;
 
-    private readonly static Repo _instance = new ();
+    private static readonly Repo _instance = new();
     private Repo()
     {
-        _toDoItems = new List<ToDoItem>();
+        ToDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
         int i = 1;
         foreach (string item in Items)
         {
             ToDoItem newItem = new(i, Guid.NewGuid(), item, false);
-            _toDoItems.Add(newItem);
+            ToDoItemsDictionary.Add(newItem.Id,newItem);
             i++;
         }
     }
@@ -32,36 +27,30 @@ public sealed class Repo // singleton class (only called once)
 
     public void Add(ToDoItem newItem)
     {
-        newItem.Position = ToDoItems.Count + 1;
-        ToDoItems.Add(newItem);
+        newItem.Position = ToDoItemsDictionary.Count + 1;
+        ToDoItemsDictionary.Add(newItem.Id,newItem);
     }
-    
+
     public ToDoItem? GetItem(Guid id)
     {
-        return ToDoItems.Find(x => x.Id == id);
+        ToDoItem? foundItem = null;
+        if (ToDoItemsDictionary.ContainsKey(id))
+            foundItem = ToDoItemsDictionary[id];
+        return foundItem;
     }
 
     public void ReplaceItem(ToDoItem updatedItem)
     {
-        for (int i = 0; i < ToDoItems.Count; i++)
-        {
-            if (ToDoItems[i].Id == updatedItem.Id)
-            {
-                updatedItem.Position = ToDoItems[i].Position;
-                ToDoItems[i] = updatedItem;
-            }
-        }
+        ToDoItemsDictionary[updatedItem.Id] = updatedItem;
     }
+
     public ToDoItem? Delete(Guid id)
     {
-        ToDoItem deletedItem = null;
-        for (int i = 0; i < ToDoItems.Count; i++)
+        ToDoItem? deletedItem = null;
+        if (ToDoItemsDictionary.ContainsKey(id))
         {
-            if (ToDoItems[i].Id == id)
-            {
-                deletedItem = ToDoItems[i];
-                ToDoItems.RemoveAt(i);
-            }
+            deletedItem = ToDoItemsDictionary[id];
+            ToDoItemsDictionary.Remove(id);
         }
         return deletedItem;
     }

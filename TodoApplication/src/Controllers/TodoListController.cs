@@ -19,7 +19,7 @@ public class TodoListController : ControllerBase
     [HttpGet("GetTodoList")]
     public IActionResult Get()
     {
-        return Ok(Repo.Instance.ToDoItems);
+        return Ok(Repo.Instance.ToDoItemsDictionary);
     }
 
 
@@ -52,10 +52,10 @@ public class TodoListController : ControllerBase
     [HttpDelete("DeleteItem")]
     public IActionResult Delete(Guid id)
     {
-        ToDoItem? itemtoDelete = Repo.Instance.Delete(id);
-        if (itemtoDelete == null)
+        ToDoItem? itemToDelete = Repo.Instance.Delete(id);
+        if (itemToDelete == null)
             return NotFound();
-        return Ok(itemtoDelete);
+        return Ok(itemToDelete);
     }
 
 }
