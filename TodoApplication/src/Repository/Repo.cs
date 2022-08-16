@@ -41,6 +41,7 @@ public sealed class Repo // singleton class (only called once)
 
     public void ReplaceItem(ToDoItem updatedItem)
     {
+        updatedItem.Position = ToDoItemsDictionary[updatedItem.Id].Position;
         ToDoItemsDictionary[updatedItem.Id] = updatedItem;
     }
 
