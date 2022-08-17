@@ -15,7 +15,7 @@ The idea of abstraction is to hide internal details and only show the functional
 Fields should be kept private to a class and accessed via get and set properties. Properties provide a level of abstraction allowing you to change the fields while not affecting the external way they are accessed by the things that use your class.
 
 ## Properties
-Properties are used to expose fields, allowing you to "set" and "get" it's value. Properties are also known as accessors, and the "get" and "set" are called peoperty accessors.
+Properties are used to expose fields, allowing you to "set" and "get" it's value. Properties are also known as accessors, and the "get" and "set" are called property accessors.
 `value` is a keyword in C#, it is like a parameter for the set method.
 ```
 public int Id
