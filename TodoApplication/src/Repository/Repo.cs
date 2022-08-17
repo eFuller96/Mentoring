@@ -29,7 +29,9 @@ public sealed class Repo // singleton class (only called once)
     {
         // Check null Guid
         newItem.Position = ToDoItemsDictionary.Count + 1;
-        ToDoItemsDictionary.Add(newItem.Id,newItem);
+        if (GetItem(newItem.Id) != null)
+            newItem.Id = new Guid();
+        ToDoItemsDictionary.Add(newItem.Id, newItem);
     }
 
     public ToDoItem? GetItem(Guid id)
@@ -40,10 +42,16 @@ public sealed class Repo // singleton class (only called once)
         return foundItem;
     }
 
-    public void ReplaceItem(ToDoItem updatedItem)
+    public ToDoItem? ReplaceItem(ToDoItem updatedItem)
     {
-        updatedItem.Position = ToDoItemsDictionary[updatedItem.Id].Position;
-        ToDoItemsDictionary[updatedItem.Id] = updatedItem;
+        ToDoItem? updatedItemFound = null;
+        if (ToDoItemsDictionary.ContainsKey(updatedItem.Id))
+        {
+            updatedItem.Position = ToDoItemsDictionary[updatedItem.Id].Position;
+            ToDoItemsDictionary[updatedItem.Id] = updatedItem;
+            updatedItemFound = updatedItem;
+        }
+        return updatedItemFound;
     }
 
     public ToDoItem? Delete(Guid id)
