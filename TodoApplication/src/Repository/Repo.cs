@@ -27,6 +27,7 @@ public sealed class Repo // singleton class (only called once)
 
     public void Add(ToDoItem newItem)
     {
+        // Check null Guid
         newItem.Position = ToDoItemsDictionary.Count + 1;
         ToDoItemsDictionary.Add(newItem.Id,newItem);
     }

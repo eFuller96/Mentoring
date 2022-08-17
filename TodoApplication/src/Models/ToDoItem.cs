@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 
 namespace TodoApplication.Models
 {
@@ -6,6 +7,7 @@ namespace TodoApplication.Models
     {
         public int Position { get; set; }
         public Guid Id { get; set; }
+        [Required]
         public string Name { get; set; }
         public bool IsCompleted { get; set; }
 
