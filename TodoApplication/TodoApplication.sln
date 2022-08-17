@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documentation", "documentation", "{B8ACBC28-A2A6-460F-9E34-7DF35A71F3F3}"
 	ProjectSection(SolutionItems) = preProject
 		documentation\TodoApiApp.md = documentation\TodoApiApp.md
+		documentation\UnitTests.md = documentation\UnitTests.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A9CF9282-055A-4E1D-9CDA-C1EB69164454}"
