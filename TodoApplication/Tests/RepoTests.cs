@@ -1,16 +1,14 @@
-using TodoApplication;
+using NUnit.Framework;
 using TodoApplication.Models;
 using TodoApplication.Repository;
-//using NUnit.Framework; //When using TestCase
-//using Assert = NUnit.Framework.Assert;
-// Assert is ambiguous between NUnit and Microsoft Vs Test Tools
+using Assert = NUnit.Framework.Assert;
 
 namespace APITests
 {
-    [TestClass]
+    
     public class RepoTests
     {
-        [TestMethod]
+        [Test]
         public void CreatingRepoInstance_CreatesADictionaryWithThreeItemsToDo()
         {
             // Arrange
@@ -29,8 +27,25 @@ namespace APITests
             Assert.AreEqual(items[2], toDoItemsDictionary.ElementAt(2).Value.Name);
         }
 
-        [TestMethod]
-        public void Add_ShouldBeAddedToDictionary_WithCorrectPosition_Delete_Should_Remove()
+        [Test]
+        public void Get_ShouldReturnItemIfFound_ShouldReturnNullIfNot()
+        {
+            // Arrange
+            Guid id = Guid.NewGuid();
+            ToDoItem toDoItem = new ToDoItem(1, id, "name", false);
+            Repo.Instance.Add(toDoItem);
+
+            // Act
+            var result = Repo.Instance.GetItem(id);
+            var expectedNullResult = Repo.Instance.GetItem(new Guid());
+
+            //Assert
+            Assert.AreEqual(toDoItem, result);
+            Assert.IsNull(expectedNullResult);
+        }
+
+        [Test]
+        public void Add_ShouldBeAddedToDictionary_WithCorrectPosition()
         {
             // Arrange
             var introducedPosition = 1;
@@ -46,25 +61,23 @@ namespace APITests
             Assert.AreSame(toDoItem, Repo.Instance.ToDoItemsDictionary.ElementAt(expectedPosition - 1).Value);
         }
 
-        [TestMethod]
-        public void Get_ShouldReturnItemIfFound_ShouldReturnNullIfNot()
+        [Test]
+        public void Add_ShouldGenerateANewGuid_WhenIDAlreadyExists()
         {
             // Arrange
-            Guid id = Guid.NewGuid();
-            ToDoItem toDoItem = new ToDoItem(1, id, "name", false);
-            Repo.Instance.Add(toDoItem);
+            var id = Repo.Instance.ToDoItemsDictionary.ElementAt(0).Key;
+            ToDoItem toDoItem = new ToDoItem(4, id, "name", false);
 
             // Act
-            var result = Repo.Instance.GetItem(id);
-            var expectedNullResult = Repo.Instance.GetItem(new Guid());
+            Repo.Instance.Add(toDoItem);
 
             //Assert
-            Assert.AreEqual(toDoItem,result);
-            Assert.IsNull(expectedNullResult);
+            Assert.AreNotEqual(Repo.Instance.ToDoItemsDictionary.Last().Key, id);
         }
 
-        [TestMethod]
-        public void Replace_ShouldSetUpdatedToDoItem_WhereItsCorrespondingIDIsPlacedInDictionary() 
+
+        [Test]
+        public void Replace_ShouldReturnUpdatedToDoItem_WhereItsCorrespondingIDIsPlacedInDictionary() 
         {
             // Arrange
             var toDoItemsDictionary = Repo.Instance.ToDoItemsDictionary;
@@ -73,16 +86,31 @@ namespace APITests
             ToDoItem updatedToDoItem = new ToDoItem(2, currentToDoItem.Id, "Updated Name", true);
 
             // Act
-            Repo.Instance.ReplaceItem(updatedToDoItem);
+            var result = Repo.Instance.ReplaceItem(updatedToDoItem);
 
             //Assert
             Assert.AreEqual(itemsCount, toDoItemsDictionary.Count);
             Assert.AreEqual(updatedToDoItem, toDoItemsDictionary[currentToDoItem.Id]);
+            Assert.AreEqual(result, updatedToDoItem);
             Assert.AreNotEqual(currentToDoItem, toDoItemsDictionary.ElementAt(0).Value);
         }
 
-        [TestMethod]
-        public void Delete_ShouldRemoveFromDictionary()
+        [Test]
+        public void Replace_ShouldReturnNull_WhenIDIsNotFound()
+        {
+            // Arrange
+            var toDoItemsDictionary = Repo.Instance.ToDoItemsDictionary;
+            ToDoItem updatedToDoItem = new ToDoItem(2, new Guid(), "Updated Name", true);
+
+            // Act
+            var result = Repo.Instance.ReplaceItem(updatedToDoItem);
+
+            //Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void Delete_ShouldRemoveFromDictionary_IfIDExists()
         {
             // Arrange
             var toDoItemsDictionary = Repo.Instance.ToDoItemsDictionary;
@@ -98,13 +126,27 @@ namespace APITests
 
         }
 
+        [Test]
+        public void Delete_ShouldReturnNull_IfIDDoesNotExists()
+        {
+            // Arrange
+            var toDoItemsDictionary = Repo.Instance.ToDoItemsDictionary;
+            var itemsCount = toDoItemsDictionary.Count;
+
+            // Act
+            var result = Repo.Instance.Delete(new Guid());
+
+            //Assert
+            Assert.AreEqual(itemsCount, toDoItemsDictionary.Count);
+            Assert.IsNull(result);
+
+        }
+
 
         private void ClearRepoNewItems(Repo repo, string[] items)
         {
             while (repo.ToDoItemsDictionary.Count > items.Length)
-            {
                 repo.ToDoItemsDictionary.Remove(repo.ToDoItemsDictionary.Last().Key);
-            }
         }
 
 
