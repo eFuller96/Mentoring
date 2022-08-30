@@ -2,53 +2,53 @@ using TodoApplication.Models;
 
 namespace TodoApplication.Repository;
 
-public sealed class Repo // singleton class (only called once)
+public class Repo // singleton class (only called once)
 {
-
-    private static readonly string[] Items = new[] { "Chores", "Shopping", "Write a web app API" };
-
-    public Dictionary<Guid, ToDoItem> ToDoItemsDictionary;
+    private Dictionary<Guid, ToDoItem> _toDoItemsDictionary;
 
     private static readonly Repo _instance = new();
-    private Repo()
-    {
-        ToDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
-        int i = 1;
-        foreach (string item in Items)
-        {
-            ToDoItem newItem = new(i, Guid.NewGuid(), item, false);
-            ToDoItemsDictionary.Add(newItem.Id,newItem);
-            i++;
-        }
-    }
 
     public static Repo Instance => _instance;
 
+    public Repo()
+    {
+        _toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
+    }
 
+    public List<ToDoItem> GetToDoItems()
+    {
+        List<ToDoItem> toDoItems = new List<ToDoItem>();
+        foreach (var toDoItem in _toDoItemsDictionary)
+        {
+            toDoItems.Add(toDoItem.Value);
+        }
+        return toDoItems;
+    }
     public void Add(ToDoItem newItem)
     {
         // Check null Guid
-        newItem.Position = ToDoItemsDictionary.Count + 1;
+        
+        newItem.Position = _toDoItemsDictionary.Count + 1;
         if (GetItem(newItem.Id) != null)
             newItem.Id = new Guid();
-        ToDoItemsDictionary.Add(newItem.Id, newItem);
+        _toDoItemsDictionary.Add(newItem.Id, newItem);
     }
 
     public ToDoItem? GetItem(Guid id)
     {
         ToDoItem? foundItem = null;
-        if (ToDoItemsDictionary.ContainsKey(id))
-            foundItem = ToDoItemsDictionary[id];
+        if (_toDoItemsDictionary.ContainsKey(id))
+            foundItem = _toDoItemsDictionary[id];
         return foundItem;
     }
 
     public ToDoItem? ReplaceItem(ToDoItem updatedItem)
     {
         ToDoItem? updatedItemFound = null;
-        if (ToDoItemsDictionary.ContainsKey(updatedItem.Id))
+        if (_toDoItemsDictionary.ContainsKey(updatedItem.Id))
         {
-            updatedItem.Position = ToDoItemsDictionary[updatedItem.Id].Position;
-            ToDoItemsDictionary[updatedItem.Id] = updatedItem;
+            updatedItem.Position = _toDoItemsDictionary[updatedItem.Id].Position;
+            _toDoItemsDictionary[updatedItem.Id] = updatedItem;
             updatedItemFound = updatedItem;
         }
         return updatedItemFound;
@@ -57,10 +57,10 @@ public sealed class Repo // singleton class (only called once)
     public ToDoItem? Delete(Guid id)
     {
         ToDoItem? deletedItem = null;
-        if (ToDoItemsDictionary.ContainsKey(id))
+        if (_toDoItemsDictionary.ContainsKey(id))
         {
-            deletedItem = ToDoItemsDictionary[id];
-            ToDoItemsDictionary.Remove(id);
+            deletedItem = _toDoItemsDictionary[id];
+            _toDoItemsDictionary.Remove(id);
         }
         return deletedItem;
     }
