@@ -19,15 +19,15 @@ public class TodoListController : ControllerBase
     [HttpGet("GetTodoList")]
     public IActionResult Get()
     {
-        return Ok(Repo.Instance.ToDoItemsDictionary);
+        return Ok(Repo.Instance.GetToDoItems());
     }
 
 
     [HttpPost("AddItem")]
-    public ToDoItem Add([FromBody]ToDoItem newItem)
+    public IActionResult Add([FromBody]ToDoItem newItem)
     {
         Repo.Instance.Add(newItem);
-        return newItem;
+        return Ok(newItem);
     }
 
 
