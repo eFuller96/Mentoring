@@ -22,7 +22,7 @@ public class TodoListController : ControllerBase
         return Ok(Repo.Instance.GetToDoItems());
     }
 
-
+    // OK or CreatedAtAction?
     [HttpPost("AddItem")]
     public IActionResult Add([FromBody]ToDoItem newItem)
     {
@@ -44,7 +44,9 @@ public class TodoListController : ControllerBase
     [HttpPut("UpdateItem")]
     public IActionResult Update([FromBody] ToDoItem updatedItem)
     {
-        Repo.Instance.ReplaceItem(updatedItem);
+        ToDoItem? resultItem = Repo.Instance.ReplaceItem(updatedItem);
+        if (resultItem == null)
+            return NotFound();
         return Ok(Repo.Instance.GetItem(updatedItem.Id));
     }
 
