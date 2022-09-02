@@ -1,5 +1,3 @@
-using System.Collections;
-using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using TodoApplication.Models;
 using TodoApplication.Repository;
@@ -27,6 +25,7 @@ public class TodoListController : ControllerBase
     public IActionResult Add([FromBody]ToDoItem newItem)
     {
         Repo.Instance.Add(newItem);
+        //return CreatedAtAction(nameof(Add), newItem); status 201
         return Ok(newItem);
     }
 
@@ -34,7 +33,7 @@ public class TodoListController : ControllerBase
     [HttpGet("GetItem")]
     public IActionResult GetItem(Guid id)
     {
-        ToDoItem? resultItem = Repo.Instance.GetItem(id);
+        var resultItem = Repo.Instance.GetItem(id);
         if (resultItem == null)
             return NotFound();
         return Ok(resultItem);
@@ -44,7 +43,7 @@ public class TodoListController : ControllerBase
     [HttpPut("UpdateItem")]
     public IActionResult Update([FromBody] ToDoItem updatedItem)
     {
-        ToDoItem? resultItem = Repo.Instance.ReplaceItem(updatedItem);
+        var resultItem = Repo.Instance.ReplaceItem(updatedItem);
         if (resultItem == null)
             return NotFound();
         return Ok(Repo.Instance.GetItem(updatedItem.Id));
@@ -54,7 +53,7 @@ public class TodoListController : ControllerBase
     [HttpDelete("DeleteItem")]
     public IActionResult Delete(Guid id)
     {
-        ToDoItem? itemToDelete = Repo.Instance.Delete(id);
+        var itemToDelete = Repo.Instance.Delete(id);
         if (itemToDelete == null)
             return NotFound();
         return Ok(itemToDelete);

@@ -2,13 +2,11 @@ using TodoApplication.Models;
 
 namespace TodoApplication.Repository;
 
-public class Repo // singleton class (only called once)
+public class Repo 
 {
-    private Dictionary<Guid, ToDoItem> _toDoItemsDictionary;
+    private readonly Dictionary<Guid, ToDoItem> _toDoItemsDictionary;
 
-    private static readonly Repo _instance = new();
-
-    public static Repo Instance => _instance;
+    public static Repo Instance { get; } = new();
 
     public Repo()
     {
