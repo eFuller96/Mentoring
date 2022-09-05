@@ -41,7 +41,7 @@ namespace APITests
         }
 
         [Test]
-        public void Add_MustReturn200HTTPStatus()
+        public void Add_MustReturn201HTTPStatus_IfAdded()
         {
             // Arrange
 
@@ -49,7 +49,7 @@ namespace APITests
             var result = _todoController.Add(_toDoItem) as ObjectResult;
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status200OK);
+            Assert.AreEqual(result?.StatusCode, StatusCodes.Status201Created);
             _todoController.Delete(_toDoItem.Id);
         }
 
@@ -82,19 +82,18 @@ namespace APITests
         }
 
         [Test]
-        public void Update_MustReturn200HTTPStatus_IfUpdated()
+        public void Update_MustReturn204HTTPStatus_IfUpdated()
         {
             // Arrange
             _todoController.Add(_toDoItem);
 
-            // We have to create a new Item, since it's a reference type! (and modifying new objects modifies original) -- that doesn't happen with value types
             var updatedToDoItem = new ToDoItem(1, new Guid(), "name", true);
 
             // Act
-            var result = _todoController.Update(updatedToDoItem) as ObjectResult;
+            var result = _todoController.Update(updatedToDoItem) as StatusCodeResult;
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status200OK);
+            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
             _todoController.Delete(updatedToDoItem.Id);
         }
 
@@ -111,21 +110,21 @@ namespace APITests
         }
 
         [Test]
-        public void Delete_MustReturn200HTTPStatus_IfDeleted()
+        public void Delete_MustReturn204HTTPStatus_IfDeleted()
         {
             // Arrange
             _todoController.Add(_toDoItem);
 
             // Act
-            var result = _todoController.Delete(_toDoItem.Id) as ObjectResult;
+            var result = _todoController.Delete(_toDoItem.Id) as StatusCodeResult;
 
-            //Assert -- the order does matter
-            Assert.IsInstanceOf(typeof(OkObjectResult),result);
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status200OK);
+            //Assert
+            Assert.IsInstanceOf(typeof(StatusCodeResult),result);
+            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
         }
 
         [Test]
-        public void Delete_MustReturn404HTTPStatus_IfNotDeleted()
+        public void Delete_MustReturn500HTTPStatus_IfNotDeleted()
         {
             // Arrange
 
@@ -133,7 +132,7 @@ namespace APITests
             var result = _todoController.Delete(_toDoItem.Id) as StatusCodeResult;
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status404NotFound);
+            Assert.AreEqual(result?.StatusCode, StatusCodes.Status500InternalServerError);
         }
 
     }
