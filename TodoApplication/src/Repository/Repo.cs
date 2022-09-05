@@ -22,27 +22,26 @@ public class Repo
         }
         return toDoItems;
     }
+
     public void Add(ToDoItem newItem)
     {
-        // Check null Guid
-        
         newItem.Position = _toDoItemsDictionary.Count + 1;
         if (GetItem(newItem.Id) != null)
             newItem.Id = new Guid();
         _toDoItemsDictionary.Add(newItem.Id, newItem);
     }
 
-    public ToDoItem? GetItem(Guid id)
+    public ToDoItem GetItem(Guid id)
     {
-        ToDoItem? foundItem = null;
+        ToDoItem foundItem = null;
         if (_toDoItemsDictionary.ContainsKey(id))
             foundItem = _toDoItemsDictionary[id];
         return foundItem;
     }
 
-    public ToDoItem? ReplaceItem(ToDoItem updatedItem)
+    public ToDoItem ReplaceItem(ToDoItem updatedItem)
     {
-        ToDoItem? updatedItemFound = null;
+        ToDoItem updatedItemFound = null;
         if (_toDoItemsDictionary.ContainsKey(updatedItem.Id))
         {
             updatedItem.Position = _toDoItemsDictionary[updatedItem.Id].Position;
@@ -52,9 +51,9 @@ public class Repo
         return updatedItemFound;
     }
 
-    public ToDoItem? Delete(Guid id)
+    public ToDoItem Delete(Guid id)
     {
-        ToDoItem? deletedItem = null;
+        ToDoItem deletedItem = null;
         if (_toDoItemsDictionary.ContainsKey(id))
         {
             deletedItem = _toDoItemsDictionary[id];
