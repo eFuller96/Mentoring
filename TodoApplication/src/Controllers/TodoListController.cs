@@ -1,3 +1,4 @@
+using Flurl;
 using Microsoft.AspNetCore.Mvc;
 using TodoApplication.Models;
 using TodoApplication.Repository;
@@ -20,13 +21,14 @@ public class TodoListController : ControllerBase
         return Ok(Repo.Instance.GetToDoItems());
     }
 
-    // OK or CreatedAtAction?
+    // Not unhappy path (500) for now 
     [HttpPost("AddItem")]
-    public IActionResult Add([FromBody]ToDoItem newItem)
+    public IActionResult Add([FromBody] ToDoItem newItem)
     {
         Repo.Instance.Add(newItem);
-        //return CreatedAtAction(nameof(Add), newItem); status 201
-        return Ok(newItem);
+        var location = Flurl.Url.Combine("http://localhost:7206/TodoList", "GetItem")
+            .SetQueryParam("id", newItem.Id.ToString());
+        return Created(location, newItem); //no returning the body, but the url of the object created
     }
 
 
@@ -46,7 +48,7 @@ public class TodoListController : ControllerBase
         var resultItem = Repo.Instance.ReplaceItem(updatedItem);
         if (resultItem == null)
             return NotFound();
-        return Ok(Repo.Instance.GetItem(updatedItem.Id));
+        return NoContent();
     }
 
 
@@ -55,8 +57,8 @@ public class TodoListController : ControllerBase
     {
         var itemToDelete = Repo.Instance.Delete(id);
         if (itemToDelete == null)
-            return NotFound();
-        return Ok(itemToDelete);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        return NoContent();
     }
 
 }
