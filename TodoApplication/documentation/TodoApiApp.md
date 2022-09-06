@@ -7,7 +7,7 @@
 1. Clone a repository from GitHub: https://github.com/eFuller96/Mentoring.git
 1. Switch to a new branch called "noelia"
     - If it already exists, switch to it and `rebase` onto latest `master`. This will ensure all the latest changes on master are in your branch.
-1. Open TodoApplication.sln and run from within Visual Studio 
+1. Open ToDoApplication.sln and run from within Visual Studio 
 1. Using postman, get the weather forecast via a HTTP Request 
     1. Check launchSettings.json to see what port the application is configured to run on 
     1. Check TodoListController.cs to see what the endpoint name is 

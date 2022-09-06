@@ -1,64 +1,54 @@
 using Flurl;
 using Microsoft.AspNetCore.Mvc;
-using TodoApplication.Models;
-using TodoApplication.Repository;
+using ToDoApplication.Models;
+using ToDoApplication.Repository;
 
-namespace TodoApplication.Controllers;
+namespace ToDoApplication.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TodoListController : ControllerBase
+public class ToDoListController : ControllerBase
 {
 
-    public TodoListController()
-    {
-    }
-
-
-    [HttpGet("GetTodoList")]
+    [HttpGet]
     public IActionResult Get()
     {
         return Ok(Repo.Instance.GetToDoItems());
     }
 
     // Not unhappy path (500) for now 
-    [HttpPost("AddItem")]
+    [HttpPost]
     public IActionResult Add([FromBody] ToDoItem newItem)
     {
         Repo.Instance.Add(newItem);
-        var location = Flurl.Url.Combine("http://localhost:7206/TodoList", "GetItem")
+        var location = Flurl.Url.Combine("http://localhost:7206/TodoList", "Get")
             .SetQueryParam("id", newItem.Id.ToString());
         return Created(location, newItem); //no returning the body, but the url of the object created
     }
 
 
-    [HttpGet("GetItem")]
+    [HttpGet("Get")]
     public IActionResult GetItem(Guid id)
     {
-        var resultItem = Repo.Instance.GetItem(id);
+        var resultItem = Repo.Instance.Get(id);
         if (resultItem == null)
             return NotFound();
         return Ok(resultItem);
     }
 
 
-    [HttpPut("UpdateItem")]
+    [HttpPut]
     public IActionResult Update([FromBody] ToDoItem updatedItem)
     {
-        var resultItem = Repo.Instance.ReplaceItem(updatedItem);
-        if (resultItem == null)
-            return NotFound();
-        return NoContent();
+        var resultItem = Repo.Instance.Replace(updatedItem);
+        return resultItem == null ? NotFound() : NoContent();
     }
 
-
-    [HttpDelete("DeleteItem")]
+    [HttpDelete]
     public IActionResult Delete(Guid id)
     {
         var itemToDelete = Repo.Instance.Delete(id);
-        if (itemToDelete == null)
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        return NoContent();
+        return itemToDelete == null ? StatusCode(StatusCodes.Status500InternalServerError) : NoContent();
     }
 
 }

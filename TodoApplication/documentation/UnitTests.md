@@ -8,7 +8,7 @@ You may find you need to alter your solution to get tests passing. That's expect
 
 ### Steps
 1. Switch to your branch `noelia` and update it to have latest master
-1. Create a new Unit Test Project called `TodoApplicationTests`
+1. Create a new Unit Test Project called `ToDoApplicationTests`
 1. Install NUnit and NSubstitute framework for the project
 1. Add a test class `RepoTests.cs`
 1. In that class, add a test for each of the CRUD operations
