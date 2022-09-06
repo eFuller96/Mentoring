@@ -79,3 +79,5 @@ https://www.geeksforgeeks.org/c-sharp-class-and-object/?ref=lbp
 
 ## QUESTIONS
 - In IShape, DrawShape is not an implementation? (we shouldn't implement in interfaces)
+
+https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/access-modifiers
