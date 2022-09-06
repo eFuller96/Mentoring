@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace TodoApplication.Models
+namespace ToDoApplication.Models
 {
     public class ToDoItem
     {

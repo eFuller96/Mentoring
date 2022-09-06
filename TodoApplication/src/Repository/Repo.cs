@@ -1,6 +1,6 @@
-using TodoApplication.Models;
+using ToDoApplication.Models;
 
-namespace TodoApplication.Repository;
+namespace ToDoApplication.Repository;
 
 public class Repo 
 {
@@ -13,52 +13,37 @@ public class Repo
         _toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
     }
 
-    public List<ToDoItem> GetToDoItems()
+    public Dictionary<Guid, ToDoItem>.ValueCollection GetToDoItems()
     {
-        List<ToDoItem> toDoItems = new List<ToDoItem>();
-        foreach (var toDoItem in _toDoItemsDictionary)
-        {
-            toDoItems.Add(toDoItem.Value);
-        }
-        return toDoItems;
+        return _toDoItemsDictionary.Values;
     }
 
     public void Add(ToDoItem newItem)
     {
         newItem.Position = _toDoItemsDictionary.Count + 1;
-        if (GetItem(newItem.Id) != null)
+        if (Get(newItem.Id) != null)
             newItem.Id = new Guid();
         _toDoItemsDictionary.Add(newItem.Id, newItem);
     }
 
-    public ToDoItem GetItem(Guid id)
+    public ToDoItem Get(Guid id)
     {
-        ToDoItem foundItem = null;
-        if (_toDoItemsDictionary.ContainsKey(id))
-            foundItem = _toDoItemsDictionary[id];
-        return foundItem;
+        return _toDoItemsDictionary.ContainsKey(id) ? _toDoItemsDictionary[id] : null;
     }
 
-    public ToDoItem ReplaceItem(ToDoItem updatedItem)
+    public ToDoItem Replace(ToDoItem updatedItem)
     {
-        ToDoItem updatedItemFound = null;
-        if (_toDoItemsDictionary.ContainsKey(updatedItem.Id))
-        {
-            updatedItem.Position = _toDoItemsDictionary[updatedItem.Id].Position;
-            _toDoItemsDictionary[updatedItem.Id] = updatedItem;
-            updatedItemFound = updatedItem;
-        }
-        return updatedItemFound;
+        if (!_toDoItemsDictionary.ContainsKey(updatedItem.Id)) return null;
+        updatedItem.Position = _toDoItemsDictionary[updatedItem.Id].Position;
+        _toDoItemsDictionary[updatedItem.Id] = updatedItem;
+        return updatedItem;
     }
 
     public ToDoItem Delete(Guid id)
     {
-        ToDoItem deletedItem = null;
-        if (_toDoItemsDictionary.ContainsKey(id))
-        {
-            deletedItem = _toDoItemsDictionary[id];
-            _toDoItemsDictionary.Remove(id);
-        }
+        if (!_toDoItemsDictionary.ContainsKey(id)) return null;
+        var deletedItem = _toDoItemsDictionary[id];
+        _toDoItemsDictionary.Remove(id);
         return deletedItem;
     }
 }

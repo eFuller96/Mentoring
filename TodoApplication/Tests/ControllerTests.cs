@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NUnit.Framework;
-using TodoApplication.Controllers;
-using TodoApplication.Models;
-using TodoApplication.Repository;
+using ToDoApplication.Controllers;
+using ToDoApplication.Models;
 using Assert = NUnit.Framework.Assert;
 
 namespace APITests
@@ -12,7 +11,7 @@ namespace APITests
     public class ControllerTests
     {
         // private readonly Repo _repo;
-        private TodoListController _todoController;
+        private ToDoListController _todoController;
         private ToDoItem _toDoItem;
 
 
@@ -23,7 +22,7 @@ namespace APITests
         [SetUp]
         public void SetUp()
         {
-            _todoController = new TodoListController();
+            _todoController = new ToDoListController();
             _toDoItem = new ToDoItem(1, new Guid(), "name", false);
         }
 

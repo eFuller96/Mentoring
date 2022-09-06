@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoApplication", "src\TodoApplication.csproj", "{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoApplication", "src\ToDoApplication.csproj", "{6E9099A0-5B4C-494E-9F7B-3DDBFCED557D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7E65C8B4-6AA0-44CC-B50D-561C5EC26DC5}"
 EndProject

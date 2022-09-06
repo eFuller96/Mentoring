@@ -1,6 +1,6 @@
 using NUnit.Framework;
-using TodoApplication.Models;
-using TodoApplication.Repository;
+using ToDoApplication.Models;
+using ToDoApplication.Repository;
 using Assert = NUnit.Framework.Assert;
 
 namespace APITests
@@ -26,7 +26,7 @@ namespace APITests
             _repo.Add(_toDoItem);
 
             // Act
-            var result = _repo.GetItem(_id);
+            var result = _repo.Get(_id);
 
             //Assert
             Assert.AreEqual(_toDoItem, result);
@@ -40,7 +40,7 @@ namespace APITests
             _repo.Add(_toDoItem);
 
             // Act
-            var result = _repo.GetItem(nonExistingId);
+            var result = _repo.Get(nonExistingId);
 
             //Assert
             Assert.IsNull(result);
@@ -98,11 +98,11 @@ namespace APITests
             const int expectedItemsCount = 1;
 
             // Act
-            var result = _repo.ReplaceItem(updatedToDoItem);
+            var result = _repo.Replace(updatedToDoItem);
 
             //Assert
             Assert.AreEqual(expectedItemsCount, _repo.GetToDoItems().Count);
-            Assert.AreEqual(updatedToDoItem, _repo.GetItem(_toDoItem.Id));
+            Assert.AreEqual(updatedToDoItem, _repo.Get(_toDoItem.Id));
             Assert.AreEqual(result, updatedToDoItem);
             Assert.AreNotEqual(_toDoItem, _repo.GetToDoItems().ElementAt(0));
         }
@@ -115,7 +115,7 @@ namespace APITests
             ToDoItem updatedToDoItem = new ToDoItem(2, new Guid(), "Updated Name", true);
 
             // Act
-            var result = _repo.ReplaceItem(updatedToDoItem);
+            var result = _repo.Replace(updatedToDoItem);
 
             //Assert
             Assert.IsNull(result);
@@ -134,7 +134,7 @@ namespace APITests
 
             //Assert
             Assert.AreEqual(itemsCount, _repo.GetToDoItems().Count + 1);
-            Assert.IsNull(_repo.GetItem(id));
+            Assert.IsNull(_repo.Get(id));
         }
 
         [Test]
