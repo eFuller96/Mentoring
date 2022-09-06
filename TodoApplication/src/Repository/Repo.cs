@@ -22,7 +22,7 @@ public class Repo
     {
         newItem.Position = _toDoItemsDictionary.Count + 1;
         if (Get(newItem.Id) != null)
-            newItem.Id = new Guid();
+            newItem.Id = Guid.NewGuid();
         _toDoItemsDictionary.Add(newItem.Id, newItem);
     }
 
