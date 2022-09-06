@@ -7,20 +7,49 @@ namespace APITests
 {
     public class RepoTests
     {
-        private Guid _id;
+        private readonly Guid _id = Guid.NewGuid();
         private ToDoItem _toDoItem;
         private Repo _repo;
 
         [SetUp]
         public void SetUp ()
         {
-            _id = Guid.NewGuid();
-            _toDoItem = new ToDoItem(1, _id, "name", false);
+            _toDoItem = new ToDoItem { Id =  _id, IsCompleted = false, Name = "name", Position = 1 };
             _repo = new Repo();
         }
-        
+
         [Test]
-        public void GetItem_ShouldReturnItemIfFound()
+        public void GetToDoItems_ShouldReturnAllItems_IfFound()
+        {
+            // Arrange
+            var item1 = _toDoItem;
+            var item2 = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name2", Position = 2 };
+            _repo.Add(item1);
+            _repo.Add(item2);
+
+            // Act
+            var result = _repo.GetToDoItems();
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+        }
+
+        [Test]
+        public void GetToDoItems_ShouldReturnEmpty_IfNoItemsFound()
+        {
+            // Arrange
+
+            // Act
+            var result = _repo.GetToDoItems();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsEmpty(result);
+        }
+
+
+        [Test]
+        public void Get_ShouldReturnItem_IfFound()
         {
             // Arrange
             _repo.Add(_toDoItem);
@@ -33,11 +62,10 @@ namespace APITests
         }
 
         [Test]
-        public void GetItem_ShouldReturnNullIfNotFound()
+        public void Get_ShouldReturnNull_IfNotFound()
         {
             // Arrange
             var nonExistingId = Guid.NewGuid();
-            _repo.Add(_toDoItem);
 
             // Act
             var result = _repo.Get(nonExistingId);
@@ -47,7 +75,7 @@ namespace APITests
         }
 
         [Test]
-        public void Add_ShouldBeAddedToDictionary()
+        public void Add_ShouldAddItemToDictionary()
         {
             // Arrange
 
@@ -55,6 +83,7 @@ namespace APITests
             _repo.Add(_toDoItem);
 
             //Assert
+            Assert.IsNotNull(_repo.GetToDoItems());
             Assert.AreEqual(1, _repo.GetToDoItems().Count);
             Assert.AreEqual(_toDoItem,_repo.GetToDoItems().ElementAt(0));
         }
@@ -63,56 +92,57 @@ namespace APITests
         public void Add_ShouldBeAddedInCorrectPosition()
         {
             // Arrange
-            var secondToDoItem = _toDoItem;
+            _repo.Add(_toDoItem);
+            var id = Guid.NewGuid();
+            var secondToDoItem = new ToDoItem {Id = id };
 
             // Act
-            _repo.Add(_toDoItem);
             _repo.Add(secondToDoItem);
 
             //Assert
-            Assert.AreEqual(2, _repo.GetToDoItems().Last().Position);
+            Assert.AreEqual(2, _repo.Get(id).Position);
         }
 
 
         [Test]
-        public void Add_ShouldGenerateANewGuid_WhenIDAlreadyExists()
+        public void Add_ShouldGenerateNewGuid_WhenIdAlreadyExists()
         {
             // Arrange
             _repo.Add(_toDoItem);
-            var id = _repo.GetToDoItems().ElementAt(0).Id;
+            var copyToDoItem = new ToDoItem { Id = _id, IsCompleted = false, Name = "name", Position = 1 };
 
             // Act
-            _repo.Add(_toDoItem);
+            _repo.Add(copyToDoItem);
 
             //Assert
-            Assert.AreNotEqual(_repo.GetToDoItems().Last().Id, id);
+            Assert.AreEqual(2,_repo.GetToDoItems().Count);
+            Assert.AreNotEqual(_repo.GetToDoItems().ElementAt(0).Id, _repo.GetToDoItems().ElementAt(1).Id);
         }
 
 
         [Test]
-        public void Replace_ShouldReturnUpdatedToDoItem_WhereItsCorrespondingIDIsPlacedInDictionary()
+        public void Replace_ShouldReturnUpdatedToDoItem_WhereItsCorrespondingIdIsPlacedInDictionary()
         {
             // Arrange
             _repo.Add(_toDoItem);
-            var updatedToDoItem = new ToDoItem(2, _toDoItem.Id, "Updated Name", true);
-            const int expectedItemsCount = 1;
+
+            var updatedToDoItem = new ToDoItem { Id = _toDoItem.Id, IsCompleted = true, Name = "updated name", Position = 2 };
 
             // Act
             var result = _repo.Replace(updatedToDoItem);
 
             //Assert
-            Assert.AreEqual(expectedItemsCount, _repo.GetToDoItems().Count);
+            Assert.AreEqual(1, _repo.GetToDoItems().Count);
             Assert.AreEqual(updatedToDoItem, _repo.Get(_toDoItem.Id));
             Assert.AreEqual(result, updatedToDoItem);
-            Assert.AreNotEqual(_toDoItem, _repo.GetToDoItems().ElementAt(0));
         }
 
         [Test]
-        public void Replace_ShouldReturnNull_WhenIDIsNotFound()
+        public void Replace_ShouldReturnNull_WhenIdIsNotFound()
         {
             // Arrange
             _repo.Add(_toDoItem);
-            ToDoItem updatedToDoItem = new ToDoItem(2, new Guid(), "Updated Name", true);
+            var updatedToDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = true, Name = "name", Position = 2 };
 
             // Act
             var result = _repo.Replace(updatedToDoItem);
@@ -122,35 +152,30 @@ namespace APITests
         }
 
         [Test]
-        public void Delete_ShouldRemoveFromDictionary_IfIDExists()
+        public void Delete_ShouldRemoveFromDictionary_IfIdExists()
         {
             // Arrange
             _repo.Add(_toDoItem);
-            var itemsCount = _repo.GetToDoItems().Count;
-            var id = _repo.GetToDoItems().ElementAt(0).Id;
 
             // Act
-            _repo.Delete(id);
+            _repo.Delete(_toDoItem.Id);
 
             //Assert
-            Assert.AreEqual(itemsCount, _repo.GetToDoItems().Count + 1);
-            Assert.IsNull(_repo.Get(id));
+            Assert.IsEmpty(_repo.GetToDoItems());
         }
 
         [Test]
-        public void Delete_ShouldReturnNull_IfIDDoesNotExists()
+        public void Delete_ShouldReturnNull_IfIdDoesNotExists()
         {
             // Arrange
             _repo.Add(_toDoItem);
-            var itemsCount = _repo.GetToDoItems().Count;
 
             // Act
-            var result = _repo.Delete(new Guid());
+            var result = _repo.Delete(Guid.NewGuid());
 
             //Assert
-            Assert.AreEqual(itemsCount, _repo.GetToDoItems().Count);
+            Assert.AreEqual(1, _repo.GetToDoItems().Count);
             Assert.IsNull(result);
-
         }
 
     }

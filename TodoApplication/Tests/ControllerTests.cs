@@ -23,7 +23,7 @@ namespace APITests
         public void SetUp()
         {
             _todoController = new ToDoListController();
-            _toDoItem = new ToDoItem(1, new Guid(), "name", false);
+            _toDoItem = new ToDoItem { Id =  Guid.NewGuid(), IsCompleted = false, Name = "name", Position = 1 };
         }
 
         [Test]
@@ -33,10 +33,10 @@ namespace APITests
 
 
             // Act
-            var result = _todoController.Get() as ObjectResult;
+            var result = _todoController.Get();
 
             //Assert
-            Assert.AreEqual(result?.StatusCode,StatusCodes.Status200OK);
+            Assert.IsInstanceOf(typeof(OkObjectResult), result);
         }
 
         [Test]
@@ -45,10 +45,10 @@ namespace APITests
             // Arrange
 
             // Act
-            var result = _todoController.Add(_toDoItem) as ObjectResult;
+            var result = _todoController.Add(_toDoItem);
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status201Created);
+            Assert.IsInstanceOf(typeof(CreatedResult), result);
             _todoController.Delete(_toDoItem.Id);
         }
 
@@ -57,14 +57,13 @@ namespace APITests
         public void GetItem_MustReturn200HTTPStatus_IfFound()
         {
             // Arrange
-            var id = _toDoItem.Id;
             _todoController.Add(_toDoItem);
 
             // Act
-            var result = _todoController.GetItem(id) as ObjectResult;
+            var result = _todoController.GetItem(_toDoItem.Id);
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status200OK);
+            Assert.IsInstanceOf(typeof(OkObjectResult), result);
             _todoController.Delete(_toDoItem.Id);
         }
 
@@ -74,10 +73,10 @@ namespace APITests
             // Arrange
 
             // Act
-            var result = _todoController.GetItem(new Guid()) as StatusCodeResult;
+            var result = _todoController.GetItem(Guid.NewGuid());
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status404NotFound);
+            Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
 
         [Test]
@@ -86,13 +85,14 @@ namespace APITests
             // Arrange
             _todoController.Add(_toDoItem);
 
-            var updatedToDoItem = new ToDoItem(1, new Guid(), "name", true);
+            var updatedToDoItem = new ToDoItem { Id = _toDoItem.Id, IsCompleted = true, Name = "name", Position = 1 };
+
 
             // Act
-            var result = _todoController.Update(updatedToDoItem) as StatusCodeResult;
+            var result = _todoController.Update(updatedToDoItem);
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
+            Assert.IsInstanceOf(typeof(NoContentResult), result);
             _todoController.Delete(updatedToDoItem.Id);
         }
 
@@ -102,10 +102,10 @@ namespace APITests
             // Arrange
 
             // Act
-            var result = _todoController.Update(_toDoItem) as StatusCodeResult;
+            var result = _todoController.Update(_toDoItem);
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status404NotFound);
+            Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
 
         [Test]
@@ -115,11 +115,12 @@ namespace APITests
             _todoController.Add(_toDoItem);
 
             // Act
-            var result = _todoController.Delete(_toDoItem.Id) as StatusCodeResult;
+            var result = _todoController.Delete(_toDoItem.Id);
 
             //Assert
-            Assert.IsInstanceOf(typeof(StatusCodeResult),result);
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
+            Assert.IsInstanceOf(typeof(NoContentResult),result);
+            // we might need this:
+            // var noContentResult = (NoContentResult)result;
         }
 
         [Test]
