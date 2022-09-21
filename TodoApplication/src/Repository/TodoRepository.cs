@@ -2,25 +2,23 @@ using ToDoApplication.Models;
 
 namespace ToDoApplication.Repository;
 
-public class Repo 
+public class TodoRepository : ITodoRepository
 {
-    private readonly Dictionary<Guid, ToDoItem> _toDoItemsDictionary;
+    private readonly IDictionary<Guid, ToDoItem> _toDoItemsDictionary;
 
-    public static Repo Instance { get; } = new();
-
-    public Repo()
+    public TodoRepository(IDictionary<Guid, ToDoItem> dictionary)
     {
-        _toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
+        _toDoItemsDictionary = dictionary;
     }
 
-    public Dictionary<Guid, ToDoItem>.ValueCollection GetToDoItems()
+    public ICollection<ToDoItem> GetToDoItems()
     {
         return _toDoItemsDictionary.Values;
     }
 
     public void Add(ToDoItem newItem)
     {
-        newItem.Position = _toDoItemsDictionary.Count + 1;
+        newItem.Position = _toDoItemsDictionary.Count + 1; 
         if (Get(newItem.Id) != null)
             newItem.Id = Guid.NewGuid();
         _toDoItemsDictionary.Add(newItem.Id, newItem);
