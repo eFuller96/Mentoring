@@ -16,11 +16,12 @@ public class TodoRepository : ITodoRepository
         return _toDoItemsDictionary.Values;
     }
 
+    // todo make sure no test needs to be changed since we changed add (move the change position to constructor)
+    // todo if guid exists, don't add and throw exception. Change void to return item -- change todolistcontroller
     public void Add(ToDoItem newItem)
     {
-        newItem.Position = _toDoItemsDictionary.Count + 1; 
-        if (Get(newItem.Id) != null)
-            newItem.Id = Guid.NewGuid();
+        if (Get(newItem.Id) != null) // Guid: if it exists, dont add
+            newItem.Id = Guid.NewGuid(); //exception
         _toDoItemsDictionary.Add(newItem.Id, newItem);
     }
 
@@ -32,7 +33,6 @@ public class TodoRepository : ITodoRepository
     public ToDoItem Replace(ToDoItem updatedItem)
     {
         if (!_toDoItemsDictionary.ContainsKey(updatedItem.Id)) return null;
-        updatedItem.Position = _toDoItemsDictionary[updatedItem.Id].Position;
         _toDoItemsDictionary[updatedItem.Id] = updatedItem;
         return updatedItem;
     }

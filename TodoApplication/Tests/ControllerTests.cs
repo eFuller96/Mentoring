@@ -24,7 +24,7 @@ namespace APITests
         {
             _todoRepository = Substitute.For<ITodoRepository>();
             _todoController = new ToDoListController(_todoRepository);
-            _toDoItem = new ToDoItem { Id =  Guid.NewGuid(), IsCompleted = false, Name = "name", Position = 1 };
+            _toDoItem = new ToDoItem (){ Id =  Guid.NewGuid(), IsCompleted = false, Name = "name" };
         }
 
         [Test]
