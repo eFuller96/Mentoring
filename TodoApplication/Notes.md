@@ -57,4 +57,3 @@ Pero como justo queríamos registrar IDictionary,Dictionary, y el constructor de
 Por eso, al registrar usaremos: 
 `builder.Services.AddSingleton<IDictionary<Guid, ToDoItem>>(new Dictionary<Guid, ToDoItem>());`, donde especificamos que queremos el constructor vacío.
 
-ddd
