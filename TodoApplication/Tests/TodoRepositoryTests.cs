@@ -10,13 +10,13 @@ namespace APITests
     {
         // no mocks. Tried to mock dictionary but couldn't test certain things, like add to dictionary
         private ITodoRepository _repo;
-        private IDictionary<Guid, ToDoItem> toDoItemsDictionary;
+        private IDictionary<Guid, ToDoItem> _toDoItemsDictionary;
 
         [SetUp]
         public void SetUp()
         {
-            toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
-            _repo = new TodoRepository(toDoItemsDictionary);
+            _toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
+            _repo = new TodoRepository(_toDoItemsDictionary);
         }
 
         [Test]
@@ -25,8 +25,8 @@ namespace APITests
             // Arrange
             var toDoItem1 = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name1" };
             var toDoItem2 = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name2" };
-            toDoItemsDictionary.Add(toDoItem1.Id, toDoItem1);
-            toDoItemsDictionary.Add(toDoItem2.Id, toDoItem2);
+            _toDoItemsDictionary.Add(toDoItem1.Id, toDoItem1);
+            _toDoItemsDictionary.Add(toDoItem2.Id, toDoItem2);
             var expectedResult = new Collection<ToDoItem> { toDoItem1, toDoItem2 };
 
             // Act
@@ -53,7 +53,7 @@ namespace APITests
         {
             // Arrange
             var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
-            toDoItemsDictionary.Add(toDoItem.Id, toDoItem);
+            _toDoItemsDictionary.Add(toDoItem.Id, toDoItem);
 
             // Act
             var result = _repo.Get(toDoItem.Id);
@@ -109,7 +109,7 @@ namespace APITests
         {
             // Arrange
             var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
-            toDoItemsDictionary.Add(toDoItem.Id, toDoItem);
+            _toDoItemsDictionary.Add(toDoItem.Id, toDoItem);
             var copyToDoItem = new ToDoItem { Id = toDoItem.Id, IsCompleted = false, Name = "name" };
 
             // Act
@@ -127,7 +127,7 @@ namespace APITests
             // Arrange
             var id = Guid.NewGuid();
             var toDoItem = new ToDoItem { Id = id, IsCompleted = false, Name = "name" };
-            toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
+            _toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
             var updatedToDoItem = new ToDoItem { Id = id, IsCompleted = true, Name = "updated name" };
 
             // Act
@@ -157,7 +157,7 @@ namespace APITests
         {
             // Arrange
             var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
-            toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
+            _toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
 
             // Act
             _repo.Delete(toDoItem.Id);
