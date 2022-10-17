@@ -24,7 +24,7 @@ namespace APITests
         {
             _todoRepository = Substitute.For<ITodoRepository>();
             _todoController = new ToDoListController(_todoRepository);
-            _toDoItem = new ToDoItem (){ Id =  Guid.NewGuid(), IsCompleted = false, Name = "name" };
+            _toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
         }
 
         [Test]
@@ -101,13 +101,13 @@ namespace APITests
         public void Update_MustReturn204HTTPStatus_IfUpdated()
         {
             // Arrange
-            _todoRepository.Replace(_toDoItem).Returns(_toDoItem);
+            _todoRepository.Replace(_toDoItem.Id,_toDoItem).Returns(_toDoItem);
 
             // Act
-            var result = _todoController.Update(_toDoItem);
+            var result = _todoController.Update(_toDoItem.Id,_toDoItem);
 
             //Assert
-            _todoRepository.Received().Replace(_toDoItem);
+            _todoRepository.Received().Replace(_toDoItem.Id,_toDoItem);
             Assert.IsInstanceOf(typeof(NoContentResult), result);
         }
 
@@ -115,13 +115,14 @@ namespace APITests
         public void Update_MustReturn404HTTPStatus_IfNotUpdated()
         {
             // Arrange
-            _todoRepository.Replace(_toDoItem).ReturnsNull();
+            var id = Guid.NewGuid();
+            _todoRepository.Replace(_toDoItem.Id,_toDoItem).ReturnsNull();
 
             // Act
-            var result = _todoController.Update(_toDoItem);
+            var result = _todoController.Update(id,_toDoItem);
 
             //Assert
-            _todoRepository.Received().Replace(_toDoItem);
+            _todoRepository.Received().Replace(id,_toDoItem);
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
 

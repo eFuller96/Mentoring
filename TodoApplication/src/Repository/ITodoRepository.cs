@@ -8,6 +8,6 @@ public interface ITodoRepository
     ICollection<ToDoItem> GetToDoItems();
     void Add(ToDoItem newItem);
     ToDoItem Get(Guid id);
-    ToDoItem Replace(ToDoItem updatedItem);
+    ToDoItem Replace(Guid id, ToDoItem updatedItem);
     ToDoItem Delete(Guid id);
 }
