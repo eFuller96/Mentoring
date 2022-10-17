@@ -9,7 +9,6 @@ namespace APITests
     public class TodoRepositoryTests
     {
         // no mocks. Tried to mock dictionary but couldn't test certain things, like add to dictionary
-        // changed: deleted private field Id, when referencing now use toDoItem.Id
         private ITodoRepository _repo;
         private IDictionary<Guid, ToDoItem> toDoItemsDictionary;
 
@@ -177,7 +176,6 @@ namespace APITests
             var result = _repo.Delete(toDoItem.Id);
 
             //Assert
-            //Assert.AreEqual(1, _repo.GetToDoItems().Count);
             Assert.IsNull(result);
         }
 
