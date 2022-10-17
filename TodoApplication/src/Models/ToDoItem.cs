@@ -6,7 +6,7 @@ namespace ToDoApplication.Models
     {
         private static int _count;
         //todo: autogenerate guid
-        public int Position { get; } //remove set after change in TodoRepository and add constructor
+        public int Position { get; } 
         public Guid Id { get; set; }
         [Required]
         public string Name { get; set; }
