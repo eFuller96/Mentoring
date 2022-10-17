@@ -19,7 +19,6 @@ public class ToDoListController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        //todo: why were we returning null?
         return Ok(_todoRepository.GetToDoItems());
     }
 
@@ -31,7 +30,6 @@ public class ToDoListController : ControllerBase
         var location = Flurl.Url.Combine("http://localhost:7206/TodoList", "Get")
             .SetQueryParam("id", newItem.Id.ToString());
         return Created(location, newItem);
-        // todo => add with existing id
     }
 
 
@@ -46,9 +44,9 @@ public class ToDoListController : ControllerBase
 
 
     [HttpPut("{id}")]
-    public IActionResult Update([FromBody] ToDoItem updatedItem)
+    public IActionResult Update(Guid id, [FromBody] ToDoItem updatedItem)
     {
-        var resultItem = _todoRepository.Replace(updatedItem);
+        var resultItem = _todoRepository.Replace(id, updatedItem);
         return resultItem == null ? NotFound() : NoContent();
     }
 

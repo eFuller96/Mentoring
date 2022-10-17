@@ -23,8 +23,8 @@ namespace APITests
         public void GetToDoItems_ShouldReturnAllItems_IfFound()
         {
             // Arrange
-            var toDoItem1 = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name1" };
-            var toDoItem2 = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name2" };
+            var toDoItem1 = new ToDoItem { Name = "name1" };
+            var toDoItem2 = new ToDoItem { Name = "name2" };
             _toDoItemsDictionary.Add(toDoItem1.Id, toDoItem1);
             _toDoItemsDictionary.Add(toDoItem2.Id, toDoItem2);
             var expectedResult = new Collection<ToDoItem> { toDoItem1, toDoItem2 };
@@ -52,7 +52,7 @@ namespace APITests
         public void Get_ShouldReturnItem_IfFound()
         {
             // Arrange
-            var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
             _toDoItemsDictionary.Add(toDoItem.Id, toDoItem);
 
             // Act
@@ -76,24 +76,25 @@ namespace APITests
         }
 
         [Test]
-        public void Add_ShouldAddItemToDictionary()
+        public void Add_ShouldAddItemToDictionary_IfIdDoesNotExist()
         {
+            //Arrange
+            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
+
             // Act
-            var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
             _repo.Add(toDoItem);
 
             //Assert
             Assert.AreEqual(toDoItem,_repo.Get(toDoItem.Id)); 
         }
 
-
         [Test]
         public void Add_ShouldBeAddedInCorrectPosition()
         {
             // Arrange
             ToDoItem.ResetCount();
-            var toDoItem1 = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
-            var toDoItem2 = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
+            var toDoItem1 = new ToDoItem { IsCompleted = false, Name = "name" };
+            var toDoItem2 = new ToDoItem { IsCompleted = false, Name = "name" };
 
             // Act
             _repo.Add(toDoItem1);
@@ -105,33 +106,15 @@ namespace APITests
         }
         
         [Test]
-        public void Add_ShouldGenerateNewGuid_WhenIdAlreadyExists()
-        {
-            // Arrange
-            var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
-            _toDoItemsDictionary.Add(toDoItem.Id, toDoItem);
-            var copyToDoItem = new ToDoItem { Id = toDoItem.Id, IsCompleted = false, Name = "name" };
-
-            // Act
-            _repo.Add(copyToDoItem);
-
-            //Assert
-            Assert.AreEqual(2,_repo.GetToDoItems().Count);
-            Assert.AreNotEqual(_repo.GetToDoItems().ElementAt(0).Id, _repo.GetToDoItems().ElementAt(1).Id);
-        }
-
-
-        [Test]
         public void Replace_ShouldReturnUpdatedToDoItem_WhereItsCorrespondingIdIsPlacedInDictionary()
         {
             // Arrange
-            var id = Guid.NewGuid();
-            var toDoItem = new ToDoItem { Id = id, IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
             _toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
-            var updatedToDoItem = new ToDoItem { Id = id, IsCompleted = true, Name = "updated name" };
+            var updatedToDoItem = new ToDoItem { IsCompleted = true, Name = "updated name" };
 
             // Act
-            var result = _repo.Replace(updatedToDoItem);
+            var result = _repo.Replace(toDoItem.Id,updatedToDoItem);
 
             //Assert
             Assert.AreEqual(1, _repo.GetToDoItems().Count);
@@ -143,10 +126,10 @@ namespace APITests
         public void Replace_ShouldReturnNull_WhenIdIsNotFound()
         {
             // Arrange
-            var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
 
             // Act
-            var result = _repo.Replace(toDoItem);
+            var result = _repo.Replace(Guid.NewGuid(),toDoItem);
 
             //Assert
             Assert.IsNull(result);
@@ -156,7 +139,7 @@ namespace APITests
         public void Delete_ShouldRemoveFromDictionary_IfIdExists()
         {
             // Arrange
-            var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
             _toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
 
             // Act
@@ -170,7 +153,7 @@ namespace APITests
         public void Delete_ShouldReturnNull_IfIdDoesNotExists()
         {
             // Arrange
-            var toDoItem = new ToDoItem { Id = Guid.NewGuid(), IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
 
             // Act
             var result = _repo.Delete(toDoItem.Id);
