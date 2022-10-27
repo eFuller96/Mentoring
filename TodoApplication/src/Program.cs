@@ -1,3 +1,4 @@
+using ToDoApplication.DataStorage;
 using ToDoApplication.Models;
 using ToDoApplication.Repository;
 
@@ -13,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ITodoRepository,TodoRepository>();
 // Circular dependency explained in Notes.md
 builder.Services.AddSingleton<IDictionary<Guid, ToDoItem>>(new Dictionary<Guid, ToDoItem>());
+builder.Services.AddSingleton<IDataStorage,InMemoryDataStorage>();
 
 var app = builder.Build();
 

@@ -1,43 +1,44 @@
+using ToDoApplication.DataStorage;
 using ToDoApplication.Models;
 
 namespace ToDoApplication.Repository;
 
 public class TodoRepository : ITodoRepository
 {
-    private readonly IDictionary<Guid, ToDoItem> _toDoItemsDictionary;
+    private readonly IDataStorage _dataStorage;
 
-    public TodoRepository(IDictionary<Guid, ToDoItem> dictionary)
+    public TodoRepository(IDataStorage dataStorage)
     {
-        _toDoItemsDictionary = dictionary;
+        _dataStorage = dataStorage;
     }
 
     public ICollection<ToDoItem> GetToDoItems()
     {
-        return _toDoItemsDictionary.Values;
+        return _dataStorage.GetToDoItems();
     }
 
     public void Add(ToDoItem newItem)
     {
-        _toDoItemsDictionary.Add(newItem.Id, newItem);
+        _dataStorage.Add(newItem);
     }
 
     public ToDoItem Get(Guid id)
     {
-        return _toDoItemsDictionary.ContainsKey(id) ? _toDoItemsDictionary[id] : null;
+        return _dataStorage.ContainsToDoItem(id) ? _dataStorage.Get(id) : null;
     }
 
     public ToDoItem Replace(Guid id, ToDoItem updatedItem)
     {
-        if (!_toDoItemsDictionary.ContainsKey(id)) return null;
-        _toDoItemsDictionary[id] = updatedItem;
+        if (!_dataStorage.ContainsToDoItem(id)) return null;
+        _dataStorage.Replace(id, updatedItem);
         return updatedItem;
     }
 
     public ToDoItem Delete(Guid id)
     {
-        if (!_toDoItemsDictionary.ContainsKey(id)) return null;
-        var deletedItem = _toDoItemsDictionary[id];
-        _toDoItemsDictionary.Remove(id);
+        if (!_dataStorage.ContainsToDoItem(id)) return null;
+        var deletedItem = _dataStorage.Get(id);
+        _dataStorage.Delete(id);
         return deletedItem;
     }
 }
