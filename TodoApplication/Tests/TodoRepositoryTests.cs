@@ -1,5 +1,8 @@
 using System.Collections.ObjectModel;
+using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
+using ToDoApplication.DataStorage;
 using ToDoApplication.Models;
 using ToDoApplication.Repository;
 using Assert = NUnit.Framework.Assert;
@@ -8,15 +11,16 @@ namespace APITests
 {
     public class TodoRepositoryTests
     {
-        // no mocks. Tried to mock dictionary but couldn't test certain things, like add to dictionary
+        //todo should we add InMemoryDataStorageTests?
         private ITodoRepository _repo;
-        private IDictionary<Guid, ToDoItem> _toDoItemsDictionary;
+        private IDataStorage _dataStorage;
 
         [SetUp]
         public void SetUp()
         {
-            _toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
-            _repo = new TodoRepository(_toDoItemsDictionary);
+            //_toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
+            _dataStorage = Substitute.For<IDataStorage>();
+            _repo = new TodoRepository(_dataStorage);
         }
 
         [Test]
@@ -25,14 +29,14 @@ namespace APITests
             // Arrange
             var toDoItem1 = new ToDoItem { Name = "name1" };
             var toDoItem2 = new ToDoItem { Name = "name2" };
-            _toDoItemsDictionary.Add(toDoItem1.Id, toDoItem1);
-            _toDoItemsDictionary.Add(toDoItem2.Id, toDoItem2);
             var expectedResult = new Collection<ToDoItem> { toDoItem1, toDoItem2 };
+            _dataStorage.GetToDoItems().Returns(expectedResult);
 
             // Act
             var result = _repo.GetToDoItems();
 
             // Assert
+            _dataStorage.Received().GetToDoItems();
             Assert.AreEqual(expectedResult, result);
         }
 
@@ -40,11 +44,13 @@ namespace APITests
         public void GetToDoItems_ShouldReturnEmpty_IfNoItemsFound()
         {
             // Arrange
+            _dataStorage.GetToDoItems().Returns(Array.Empty<ToDoItem>());
 
             // Act
             var result = _repo.GetToDoItems();
 
             // Assert
+            _dataStorage.Received().GetToDoItems();
             Assert.IsEmpty(result);
         }
 
@@ -52,13 +58,15 @@ namespace APITests
         public void Get_ShouldReturnItem_IfFound()
         {
             // Arrange
-            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
-            _toDoItemsDictionary.Add(toDoItem.Id, toDoItem);
+            var toDoItem = new ToDoItem { Name = "name" };
+            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
+            _dataStorage.Get(toDoItem.Id).Returns(toDoItem);
 
             // Act
             var result = _repo.Get(toDoItem.Id);
 
             //Assert
+            _dataStorage.Received().Get(toDoItem.Id);
             Assert.AreEqual(toDoItem, result);
         }
 
@@ -67,98 +75,109 @@ namespace APITests
         {
             // Arrange
             var nonExistingId = Guid.NewGuid();
+            _dataStorage.ContainsToDoItem(nonExistingId).Returns(false);
 
             // Act
             var result = _repo.Get(nonExistingId);
 
             //Assert
+            _dataStorage.Received().ContainsToDoItem(nonExistingId);
             Assert.IsNull(result);
         }
 
         [Test]
-        public void Add_ShouldAddItemToDictionary_IfIdDoesNotExist()
+        public void Add_ShouldAddItemToMemoryStorage()
         {
             //Arrange
-            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { Name = "name" };
 
             // Act
             _repo.Add(toDoItem);
 
             //Assert
-            Assert.AreEqual(toDoItem,_repo.Get(toDoItem.Id)); 
+            _dataStorage.Received().Add(toDoItem);
         }
 
         [Test]
-        public void Add_ShouldBeAddedInCorrectPosition()
+        public void Replace_ShouldReplaceToDoItemInMemory_IfIdExists()
         {
             // Arrange
-            ToDoItem.ResetCount();
-            var toDoItem1 = new ToDoItem { IsCompleted = false, Name = "name" };
-            var toDoItem2 = new ToDoItem { IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { Name = "name" };
+            var updatedToDoItem = new ToDoItem { Name = "updated name" };
+            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
 
             // Act
-            _repo.Add(toDoItem1);
-            _repo.Add(toDoItem2);
+            var result = _repo.Replace(toDoItem.Id, updatedToDoItem);
 
-            //Assert
-            Assert.AreEqual(1, _repo.Get(toDoItem1.Id).Position);
-            Assert.AreEqual(2, _repo.Get(toDoItem2.Id).Position);
-        }
-        
-        [Test]
-        public void Replace_ShouldReturnUpdatedToDoItem_WhereItsCorrespondingIdIsPlacedInDictionary()
-        {
-            // Arrange
-            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
-            _toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
-            var updatedToDoItem = new ToDoItem { IsCompleted = true, Name = "updated name" };
-
-            // Act
-            var result = _repo.Replace(toDoItem.Id,updatedToDoItem);
-
-            //Assert
-            Assert.AreEqual(1, _repo.GetToDoItems().Count);
-            Assert.AreEqual(updatedToDoItem, _repo.Get(toDoItem.Id));
-            Assert.AreEqual(updatedToDoItem, result);
+            // Assert
+            _dataStorage.Received().Replace(toDoItem.Id,updatedToDoItem);
+            Assert.IsNotNull(result);
         }
 
         [Test]
-        public void Replace_ShouldReturnNull_WhenIdIsNotFound()
+        public void Replace_ShouldReturnNull_IfIdDoesNotExist()
         {
             // Arrange
-            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { Name = "name" };
+            var updatedToDoItem = new ToDoItem { Name = "updated name" };
+            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(false);
 
             // Act
-            var result = _repo.Replace(Guid.NewGuid(),toDoItem);
+            var result = _repo.Replace(toDoItem.Id, updatedToDoItem);
 
-            //Assert
+            // Assert
+            _dataStorage.DidNotReceive().Replace(toDoItem.Id, updatedToDoItem);
             Assert.IsNull(result);
         }
 
+        //public void Replace_ShouldReturnUpdatedToDoItem_WhereItsCorrespondingIdIsPlacedInMemoryStorage()
+        //{
+        //    // todo maybe this test should be in InMemoryDataStorageTest and we just want to check Replace method is called?
+        //    // todo how to check void mock?? In add we could just check it's called, but here we want to check it's replaced
+        //    // Arrange
+        //    var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
+        //    //_toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
+        //    var updatedToDoItem = new ToDoItem { IsCompleted = true, Name = "updated name" };
+        //    //_dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
+
+        //    // Act
+        //    var result = _repo.Replace(toDoItem.Id,updatedToDoItem);
+
+        //    //Assert
+        //    Assert.AreEqual(1, _repo.GetToDoItems().Count);
+        //    Assert.AreEqual(updatedToDoItem, _repo.Get(toDoItem.Id));
+        //    Assert.AreEqual(updatedToDoItem, result);
+        //}
+
+
         [Test]
-        public void Delete_ShouldRemoveFromDictionary_IfIdExists()
+        public void Delete_ShouldRemoveFromMemoryStorage_IfIdExists()
         {
             // Arrange
-            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
-            _toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
-
-            // Act
-            _repo.Delete(toDoItem.Id);
-
-            //Assert
-            Assert.IsEmpty(_repo.GetToDoItems());
-        }
-
-        [Test]
-        public void Delete_ShouldReturnNull_IfIdDoesNotExists()
-        {
-            // Arrange
-            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
+            var toDoItem = new ToDoItem { Name = "name" };
+            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
+            _dataStorage.Get(toDoItem.Id).Returns(toDoItem);
 
             // Act
             var result = _repo.Delete(toDoItem.Id);
 
             //Assert
+            _dataStorage.Received().Delete(toDoItem.Id);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void Delete_ShouldReturnNull_IfIdDoesNotExist()
+        {
+            // Arrange
+            var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
+            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(false);
+
+            // Act
+            var result = _repo.Delete(toDoItem.Id);
+
+            //Assert
+            _dataStorage.DidNotReceive().Delete(toDoItem.Id);
             Assert.IsNull(result);
         }
 
