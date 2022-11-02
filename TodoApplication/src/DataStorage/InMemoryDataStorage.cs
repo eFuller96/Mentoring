@@ -26,7 +26,6 @@ public class InMemoryDataStorage : IDataStorage
         return _toDoItemsDictionary[id];
     }
 
-    //todo remove contains so it's placed in each method ?
     public bool ContainsToDoItem(Guid id)
     {
         return _toDoItemsDictionary.ContainsKey(id);

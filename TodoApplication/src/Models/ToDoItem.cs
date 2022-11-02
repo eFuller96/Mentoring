@@ -1,27 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ToDoApplication.Models
 {
-    public record ToDoItem
+    public record ToDoItem()
     {
-        private static int _count;
+        //todo split in request and response
 
-        public int Position { get; }
-        public Guid Id { get; }
+        [JsonIgnore] 
+        public Guid Id { get; set; } = Guid.NewGuid();
         [Required]
         public string Name { get; set; }
         public bool IsCompleted { get; set; }
-
-        public ToDoItem()
-        {
-            Position = _count + 1;
-            _count = Position;
-            Id = Guid.NewGuid();
-        }
-
-        public static void ResetCount()
-        {
-            _count = 0;
-        }
     }
 }
