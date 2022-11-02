@@ -11,7 +11,6 @@ namespace APITests
 {
     public class TodoRepositoryTests
     {
-        //todo should we add InMemoryDataStorageTests?
         private ITodoRepository _repo;
         private IDataStorage _dataStorage;
 
@@ -129,25 +128,6 @@ namespace APITests
             _dataStorage.DidNotReceive().Replace(toDoItem.Id, updatedToDoItem);
             Assert.IsNull(result);
         }
-
-        //public void Replace_ShouldReturnUpdatedToDoItem_WhereItsCorrespondingIdIsPlacedInMemoryStorage()
-        //{
-        //    // todo maybe this test should be in InMemoryDataStorageTest and we just want to check Replace method is called?
-        //    // todo how to check void mock?? In add we could just check it's called, but here we want to check it's replaced
-        //    // Arrange
-        //    var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
-        //    //_toDoItemsDictionary.Add(toDoItem.Id,toDoItem);
-        //    var updatedToDoItem = new ToDoItem { IsCompleted = true, Name = "updated name" };
-        //    //_dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
-
-        //    // Act
-        //    var result = _repo.Replace(toDoItem.Id,updatedToDoItem);
-
-        //    //Assert
-        //    Assert.AreEqual(1, _repo.GetToDoItems().Count);
-        //    Assert.AreEqual(updatedToDoItem, _repo.Get(toDoItem.Id));
-        //    Assert.AreEqual(updatedToDoItem, result);
-        //}
 
 
         [Test]
