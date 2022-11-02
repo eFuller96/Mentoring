@@ -75,8 +75,6 @@ namespace APITests
             Assert.IsFalse(result);
         }
 
-
-        // todo we don't have to check when not found since we check it earlier with ContainsToDoItem
         [Test]
         public void Get_ShouldReturnItem()
         {
@@ -105,7 +103,6 @@ namespace APITests
             Assert.AreEqual(toDoItem,_dataStorage.Get(toDoItem.Id));
         }
 
-        // todo we don't have to check when not found since we check it earlier with ContainsToDoItem?
         [Test]
         public void Replace_ShouldReplaceToDoItemInMemory()
         {
