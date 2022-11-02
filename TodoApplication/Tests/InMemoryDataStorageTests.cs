@@ -105,23 +105,6 @@ namespace APITests
             Assert.AreEqual(toDoItem,_dataStorage.Get(toDoItem.Id));
         }
 
-        [Test]
-        public void Add_ShouldBeAddedInCorrectPosition()
-        {
-            // Arrange
-            ToDoItem.ResetCount();
-            var toDoItem1 = new ToDoItem { IsCompleted = false, Name = "name" };
-            var toDoItem2 = new ToDoItem { IsCompleted = false, Name = "name" };
-
-            // Act
-            _dataStorage.Add(toDoItem1);
-            _dataStorage.Add(toDoItem2);
-
-            //Assert
-            Assert.AreEqual(1, _dataStorage.Get(toDoItem1.Id).Position);
-            Assert.AreEqual(2, _dataStorage.Get(toDoItem2.Id).Position);
-        }
-
         // todo we don't have to check when not found since we check it earlier with ContainsToDoItem?
         [Test]
         public void Replace_ShouldReplaceToDoItemInMemory()
