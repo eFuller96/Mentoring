@@ -58,7 +58,6 @@ namespace APITests
         {
             // Arrange
             var toDoItem = new ToDoItem { Name = "name" };
-            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
             _dataStorage.Get(toDoItem.Id).Returns(toDoItem);
 
             // Act
@@ -74,13 +73,11 @@ namespace APITests
         {
             // Arrange
             var nonExistingId = Guid.NewGuid();
-            _dataStorage.ContainsToDoItem(nonExistingId).Returns(false);
 
             // Act
             var result = _repo.Get(nonExistingId);
 
             //Assert
-            _dataStorage.Received().ContainsToDoItem(nonExistingId);
             Assert.IsNull(result);
         }
 
@@ -103,7 +100,6 @@ namespace APITests
             // Arrange
             var toDoItem = new ToDoItem { Name = "name" };
             var updatedToDoItem = new ToDoItem { Name = "updated name" };
-            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
 
             // Act
             var result = _repo.Replace(toDoItem.Id, updatedToDoItem);
@@ -119,7 +115,6 @@ namespace APITests
             // Arrange
             var toDoItem = new ToDoItem { Name = "name" };
             var updatedToDoItem = new ToDoItem { Name = "updated name" };
-            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(false);
 
             // Act
             var result = _repo.Replace(toDoItem.Id, updatedToDoItem);
@@ -135,7 +130,6 @@ namespace APITests
         {
             // Arrange
             var toDoItem = new ToDoItem { Name = "name" };
-            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(true);
             _dataStorage.Get(toDoItem.Id).Returns(toDoItem);
 
             // Act
@@ -151,7 +145,6 @@ namespace APITests
         {
             // Arrange
             var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
-            _dataStorage.ContainsToDoItem(toDoItem.Id).Returns(false);
 
             // Act
             var result = _repo.Delete(toDoItem.Id);
