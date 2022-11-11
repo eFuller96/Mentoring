@@ -23,21 +23,23 @@ public class InMemoryDataStorage : IDataStorage
 
     public ToDoItem Get(Guid id)
     {
+        return !_toDoItemsDictionary.ContainsKey(id) ? null : _toDoItemsDictionary[id];
+    }
+
+
+    public ToDoItem Replace(Guid id, ToDoItem updatedItem)
+    {
+        if (!_toDoItemsDictionary.ContainsKey(id)) return null;
+        _toDoItemsDictionary[id] = updatedItem;
         return _toDoItemsDictionary[id];
     }
 
-    public bool ContainsToDoItem(Guid id)
+    public ToDoItem Delete(Guid id)
     {
-        return _toDoItemsDictionary.ContainsKey(id);
-    }
-
-    public void Replace(Guid id, ToDoItem updatedItem)
-    {
-        _toDoItemsDictionary[id] = updatedItem;
-    }
-
-    public void Delete(Guid id)
-    {
+        if (!_toDoItemsDictionary.ContainsKey(id)) return null;
+        var removedToDoItem = _toDoItemsDictionary[id];
         _toDoItemsDictionary.Remove(id);
+        return removedToDoItem;
     }
+
 }

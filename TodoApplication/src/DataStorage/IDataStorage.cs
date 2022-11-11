@@ -7,8 +7,7 @@ namespace ToDoApplication.DataStorage
         ICollection<ToDoItem> GetToDoItems();
         void Add(ToDoItem newItem);
         ToDoItem Get(Guid id);
-        bool ContainsToDoItem(Guid id);
-        void Replace(Guid id, ToDoItem updatedItem);
-        void Delete(Guid id);
+        ToDoItem Replace(Guid id, ToDoItem updatedItem);
+        ToDoItem Delete(Guid id);
     }
 }
