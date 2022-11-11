@@ -24,19 +24,17 @@ public class TodoRepository : ITodoRepository
 
     public ToDoItem Get(Guid id)
     {
-        return _dataStorage.ContainsToDoItem(id) ? _dataStorage.Get(id) : null;
+        return _dataStorage.Get(id);
     }
 
     public ToDoItem Replace(Guid id, ToDoItem updatedItem)
     {
-        if (!_dataStorage.ContainsToDoItem(id)) return null;
         _dataStorage.Replace(id, updatedItem);
         return updatedItem;
     }
 
     public ToDoItem Delete(Guid id)
     {
-        if (!_dataStorage.ContainsToDoItem(id)) return null;
         var deletedItem = _dataStorage.Get(id);
         _dataStorage.Delete(id);
         return deletedItem;
