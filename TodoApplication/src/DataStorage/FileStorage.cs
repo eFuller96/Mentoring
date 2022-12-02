@@ -12,50 +12,51 @@ namespace ToDoApplication.DataStorage;
 public class FileStorage : IDataStorage
 {
     // todo when async app, do with filestorage
+    private string _fileName;
     public FileStorage()
     {
+        //_fileName = fileName;
     }
 
-    public ICollection<ToDoItem> GetToDoItems()
+    public async Task<ICollection<ToDoItem>> GetToDoItems()
     {
-        var toDoItems = GetToDoItemsFromCsv();
+        var toDoItems = await GetToDoItemsFromCsv();
         return toDoItems;
     }
 
-    public void Add(ToDoItem newItem)
+    public async Task Add(ToDoItem newItem)
     {
-        var toDoItems = GetToDoItemsFromCsv();
+        var toDoItems = await GetToDoItemsFromCsv();
         toDoItems.Add(newItem);
         WriteCsv(toDoItems);
     }
 
-    public ToDoItem Get(Guid id)
+    // todo how to await this
+    public async Task<ToDoItem> Get(Guid id)
     {
         if (!ContainsToDoItem(id)) return null;
-        var toDoItem = File.ReadLines("ToDoItemsCsv.csv").Skip(1).SkipLast(1).Select(ParseToDoItem)
+        var toDoItem = File.ReadAllLinesAsync("ToDoItemsCsv.csv").Result.Skip(1).SkipLast(1).Select(ParseToDoItem)
             .SingleOrDefault(t => t.Id == id);
         return toDoItem;
     }
 
-    // todo instead of void return todoitem/null?
-    public ToDoItem Replace(Guid id, ToDoItem updatedItem)
+    public async Task Replace(Guid id, ToDoItem updatedItem)
     {
-        if (!ContainsToDoItem(id)) return null;
-        var toDoItems = GetToDoItemsFromCsv();
+        //if (!ContainsToDoItem(id)) return; 
+        // todo use VOID => fix this in other methods -done
+        var toDoItems = await GetToDoItemsFromCsv();
         for (var i = 0; i < toDoItems.Count; i++)
             if (toDoItems[i].Id == id)
                 toDoItems[i] = updatedItem;
 
         WriteCsv(toDoItems);
-        return updatedItem;
-
     }
 
-    public ToDoItem Delete(Guid id)
+    public Task Delete(Guid id)
     {
         if (!ContainsToDoItem(id)) return null;
         ToDoItem itemToRemove = null;
-        var toDoItems = GetToDoItemsFromCsv();
+        var toDoItems = GetToDoItemsFromCsv().Result;
         for (var i = 0; i < toDoItems.Count; i++)
             if (toDoItems[i].Id == id)
             {
@@ -63,29 +64,20 @@ public class FileStorage : IDataStorage
                 toDoItems.Remove(itemToRemove);
             }
         WriteCsv(toDoItems);
-        return itemToRemove;
+        return Task.FromResult(itemToRemove);
     }
 
-    private static List<ToDoItem> GetToDoItemsFromCsv()
+    // todo change this -DONE
+    private static async Task<List<ToDoItem>> GetToDoItemsFromCsv()
     {
-        var toDoItems = new List<ToDoItem>();
-        using var streamReader = File.OpenText("ToDoItemsCsv.csv");
-        streamReader.ReadLine();
-        while (!streamReader.EndOfStream)
-        {
-            var line = streamReader.ReadLine();
-            if (line == "") continue;
-            var values = line.Split(',');
-            var toDoItem = new ToDoItem()
-            {
-                Id = Guid.Parse(values[0]),
-                Name = values[1],
-                IsCompleted = Convert.ToBoolean(values[2])
-            };
-            toDoItems.Add(toDoItem);
-        }
-
-        return toDoItems;
+        var fileString = await File.ReadAllTextAsync("ToDoItemsCsv.csv");
+        var lines = fileString.Split(Environment.NewLine);
+        var linesWithoutHeader = lines.Skip(1);
+        return (from line in linesWithoutHeader 
+            where line != string.Empty 
+            select line.Split(",") 
+            into values 
+            select new ToDoItem() { Id = Guid.Parse(values[0]), Name = values[1], IsCompleted = Convert.ToBoolean(values[2]) }).ToList();
     }
 
     // todo change to private. Add unhappy path to tests. Done!

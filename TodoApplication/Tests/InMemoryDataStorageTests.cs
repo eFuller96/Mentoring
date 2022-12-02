@@ -45,7 +45,7 @@ namespace APITests
             var result = _dataStorage.GetToDoItems();
 
             // Assert
-            Assert.IsEmpty(result);
+            Assert.IsEmpty(result.Result);
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace APITests
             _dataStorage.Replace(toDoItem.Id, updatedToDoItem);
 
             //Assert
-            Assert.AreEqual(1, _dataStorage.GetToDoItems().Count);
+            Assert.AreEqual(1, _dataStorage.GetToDoItems().Result.Count);
             Assert.AreEqual(updatedToDoItem, _dataStorage.Get(toDoItem.Id));
         }
 
@@ -142,7 +142,7 @@ namespace APITests
             _dataStorage.Delete(toDoItem.Id);
 
             //Assert
-            Assert.IsEmpty(_dataStorage.GetToDoItems());
+            Assert.IsEmpty(_dataStorage.GetToDoItems().Result);
         }
 
         [Test]

@@ -12,31 +12,28 @@ public class TodoRepository : ITodoRepository
         _dataStorage = dataStorage;
     }
 
-    public ICollection<ToDoItem> GetToDoItems()
+    public Task<ICollection<ToDoItem>> GetToDoItems()
     {
         return _dataStorage.GetToDoItems();
     }
 
-    public void Add(ToDoItem newItem)
+    public async Task Add(ToDoItem newItem)
     {
-        _dataStorage.Add(newItem);
+        await _dataStorage.Add(newItem);
     }
 
-    public ToDoItem Get(Guid id)
+    public async Task<ToDoItem> Get(Guid id)
     {
-        return _dataStorage.Get(id);
+        return await _dataStorage.Get(id);
     }
 
-    public ToDoItem Replace(Guid id, ToDoItem updatedItem)
+    public async Task Replace(Guid id, ToDoItem updatedItem)
     {
-        _dataStorage.Replace(id, updatedItem);
-        return updatedItem;
+        await _dataStorage.Replace(id, updatedItem);
     }
 
-    public ToDoItem Delete(Guid id)
+    public async Task Delete(Guid id)
     {
-        var deletedItem = _dataStorage.Get(id);
-        _dataStorage.Delete(id);
-        return deletedItem;
+        await _dataStorage.Delete(id);
     }
 }
