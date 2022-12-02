@@ -50,7 +50,7 @@ namespace APITests
 
             // Assert
             _dataStorage.Received().GetToDoItems();
-            Assert.IsEmpty(result);
+            Assert.IsEmpty(result.Result);
         }
 
         [Test]

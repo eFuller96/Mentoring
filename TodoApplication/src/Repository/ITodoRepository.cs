@@ -5,9 +5,9 @@ namespace ToDoApplication.Repository;
 
 public interface ITodoRepository
 {
-    ICollection<ToDoItem> GetToDoItems();
-    void Add(ToDoItem newItem);
-    ToDoItem Get(Guid id);
-    ToDoItem Replace(Guid id, ToDoItem updatedItem);
-    ToDoItem Delete(Guid id);
+    Task<ICollection<ToDoItem>> GetToDoItems();
+    Task Add(ToDoItem newItem);
+    Task<ToDoItem> Get(Guid id);
+    Task Replace(Guid id, ToDoItem updatedItem);
+    Task Delete(Guid id);
 }

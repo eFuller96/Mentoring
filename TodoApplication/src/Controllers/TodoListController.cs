@@ -17,44 +17,45 @@ public class ToDoListController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        return Ok(_todoRepository.GetToDoItems());
+        return Ok(await _todoRepository.GetToDoItems());
     }
 
     // Not unhappy path (500) for now 
     [HttpPost]
-    public IActionResult Add([FromBody] ToDoItem newItem)
+    public async Task<IActionResult> Add([FromBody] ToDoItem newItem)
     {
-        _todoRepository.Add(newItem);
+        await _todoRepository.Add(newItem);
         var location = Flurl.Url.Combine("http://localhost:7206/TodoList", "Get")
             .SetQueryParam("id", newItem.Id.ToString());
         return Created(location, newItem);
     }
 
-
     [HttpGet("{id}")]
-    public IActionResult GetItem(Guid id)
+    public async Task<IActionResult> GetItem(Guid id)
     {
-        var resultItem = _todoRepository.Get(id);
+        var resultItem = await _todoRepository.Get(id);
         if (resultItem == null)
             return NotFound();
         return Ok(resultItem);
     }
 
-
+    // todo how to know if it is found for void methods
     [HttpPut("{id}")]
-    public IActionResult Update(Guid id, [FromBody] ToDoItem updatedItem)
+    public async Task<IActionResult> Update(Guid id, [FromBody] ToDoItem updatedItem)
     {
-        var resultItem = _todoRepository.Replace(id, updatedItem);
-        return resultItem == null ? NotFound() : NoContent();
+        await _todoRepository.Replace(id, updatedItem);
+        return NoContent();
+        //return resultItem == null ? NotFound() : NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        var itemToDelete = _todoRepository.Delete(id);
-        return itemToDelete == null ? StatusCode(StatusCodes.Status500InternalServerError) : NoContent();
+        await _todoRepository.Delete(id);
+        return NoContent();
+        //return itemToDelete == null ? StatusCode(StatusCodes.Status500InternalServerError) : NoContent();
     }
 
 }

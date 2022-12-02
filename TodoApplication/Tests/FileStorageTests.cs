@@ -9,13 +9,12 @@ namespace APITests
 {
     public class FileStorageTests
     {
-        // todo how to test with csv -- data is constantly modified
         private IDataStorage _dataStorage;
 
         [SetUp]
         public void SetUp()
         {
-            _dataStorage = new FileStorage();
+            //_dataStorage = new FileStorage();
         }
 
         // todo modify path of csv (in C:\source\My-repos\Mentoring\TodoApplication\Tests\bin\Debug\net6.0 and src)
@@ -28,7 +27,7 @@ namespace APITests
             var toDoItems = _dataStorage.GetToDoItems();
 
             // Assert
-            Assert.IsNotEmpty(toDoItems);
+            Assert.IsNotEmpty(toDoItems.Result);
         }
 
         // todo why can't we use this guid
@@ -74,7 +73,6 @@ namespace APITests
             Assert.AreEqual(toDoItem, _dataStorage.Get(id));
         }
 
-        // todo is it ok to replace at the end so that it remains the same
         [Test]
         public void Replace_ShouldReplaceInCsv_IfFound()
         {
