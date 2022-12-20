@@ -7,6 +7,7 @@ using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using ToDoApplication.Controllers;
+using ToDoApplication.Exceptions;
 using ToDoApplication.Models;
 using ToDoApplication.Repository;
 using Assert = NUnit.Framework.Assert;
@@ -28,18 +29,18 @@ namespace APITests
         }
 
         [Test]
-        public void Get_MustReturn200HTTPStatus()
+        public async Task Get_MustReturn200HTTPStatus()
         {
             // Act
             var result = _todoController.Get();
 
             //Assert
-            _todoRepository.Received().GetToDoItems();
+            await _todoRepository.Received().GetToDoItems();
             Assert.IsInstanceOf(typeof(OkObjectResult), result);
         }
 
         [Test]
-        public void Get_WhenUnableToRetrieveItems_MustReturn500HTTPStatus()
+        public async Task Get_WhenUnableToRetrieveItems_MustReturn500HTTPStatus()
         {
             // Arrange
             _todoRepository.GetToDoItems().ReturnsNull();
@@ -48,13 +49,13 @@ namespace APITests
             var result = _todoController.Get();
 
             //Assert
-            _todoRepository.Received().GetToDoItems();
+            await _todoRepository.Received().GetToDoItems();
             Assert.IsInstanceOf(typeof(OkObjectResult), result);
         }
 
 
         [Test]
-        public void Add_MustReturn201HTTPStatus_IfAdded()
+        public async Task Add_MustReturn201HTTPStatus_IfAdded()
         {
             // Arrange
             // Add is a void method, no need to mock (?) -- in the future it might change
@@ -63,13 +64,13 @@ namespace APITests
             var result = _todoController.Add(_toDoItem);
 
             //Assert
-            _todoRepository.Received().Add(_toDoItem);
+            await _todoRepository.Received().Add(_toDoItem);
             Assert.IsInstanceOf(typeof(CreatedResult), result);
         }
 
 
         [Test]
-        public void GetItem_MustReturn200HTTPStatus_IfFound()
+        public async Task GetItem_MustReturn200HTTPStatus_IfFound()
         {
             // Arrange
             _todoRepository.Get(_toDoItem.Id).Returns(_toDoItem);
@@ -78,12 +79,12 @@ namespace APITests
             var result = _todoController.GetItem(_toDoItem.Id);
 
             //Assert
-            _todoRepository.Received().Get(_toDoItem.Id);
+            await _todoRepository.Received().Get(_toDoItem.Id);
             Assert.IsInstanceOf(typeof(OkObjectResult), result);
         }
 
         [Test]
-        public void GetItem_MustReturn404HTTPStatus_IfNotFound()
+        public async Task GetItem_MustReturn404HTTPStatus_IfNotFound()
         {
             // Arrange
             var nonExistingId = Guid.NewGuid();
@@ -93,26 +94,26 @@ namespace APITests
             var result = _todoController.GetItem(nonExistingId);
 
             //Assert
-            _todoRepository.Received().Get(nonExistingId);
+            await _todoRepository.Received().Get(nonExistingId);
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
 
         [Test]
-        public void Update_MustReturn204HTTPStatus_IfUpdated()
+        public async Task Update_MustReturn204HTTPStatus_IfUpdated()
         {
             // Arrange
-            _todoRepository.Replace(_toDoItem.Id,_toDoItem).Returns(_toDoItem);
+            await _todoRepository.Replace(_toDoItem.Id,_toDoItem);
 
             // Act
             var result = _todoController.Update(_toDoItem.Id,_toDoItem);
 
             //Assert
-            _todoRepository.Received().Replace(_toDoItem.Id,_toDoItem);
+            await _todoRepository.Received().Replace(_toDoItem.Id,_toDoItem);
             Assert.IsInstanceOf(typeof(NoContentResult), result);
         }
 
         [Test]
-        public void Update_MustReturn404HTTPStatus_IfNotUpdated()
+        public async Task Update_MustReturn404HTTPStatus_IfNotUpdated()
         {
             // Arrange
             var id = Guid.NewGuid();
@@ -122,37 +123,40 @@ namespace APITests
             var result = _todoController.Update(id,_toDoItem);
 
             //Assert
-            _todoRepository.Received().Replace(id,_toDoItem);
+            await _todoRepository.Received().Replace(id,_toDoItem);
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
 
+        // todo since it is not returning anything, how to arrange?
         [Test]
-        public void Delete_MustReturn204HTTPStatus_IfDeleted()
+        public async Task Delete_MustReturn204HTTPStatus_IfDeleted()
         {
             // Arrange
-            _todoRepository.Delete(_toDoItem.Id).Returns(_toDoItem);
 
             // Act
-            var result = _todoController.Delete(_toDoItem.Id);
+            var result = await _todoController.Delete(_toDoItem.Id);
 
             //Assert
-            _todoRepository.Received().Delete(_toDoItem.Id);
+            Assert.DoesNotThrowAsync(async () => await _todoRepository.Delete(_toDoItem.Id));
+            await _todoRepository.Received().Delete(_toDoItem.Id);
             Assert.IsInstanceOf(typeof(NoContentResult),result);
+
             // we might need this:
             // var noContentResult = (NoContentResult)result;
         }
 
         [Test]
-        public void Delete_MustReturn500HTTPStatus_IfNotDeleted()
+        public async Task Delete_MustReturn500HTTPStatus_IfNotItemNotFound()
         {
             // Arrange
-            _todoRepository.Delete(_toDoItem.Id).ReturnsNull();
+            await _todoRepository.Delete(_toDoItem.Id);
 
             // Act
-            var result = _todoController.Delete(_toDoItem.Id) as StatusCodeResult;
+            var result = await _todoController.Delete(_toDoItem.Id) as StatusCodeResult;
 
             //Assert
-            _todoRepository.Received().Delete(_toDoItem.Id);
+            Assert.ThrowsAsync<ItemNotFound>(async () => await _todoRepository.Delete(_toDoItem.Id));
+            await _todoRepository.Received().Delete(_toDoItem.Id);
             Assert.AreEqual(result?.StatusCode, StatusCodes.Status500InternalServerError);
         }
 
