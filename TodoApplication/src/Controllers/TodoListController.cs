@@ -1,5 +1,6 @@
 using Flurl;
 using Microsoft.AspNetCore.Mvc;
+using ToDoApplication.Exceptions;
 using ToDoApplication.Models;
 using ToDoApplication.Repository;
 
@@ -35,27 +36,44 @@ public class ToDoListController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetItem(Guid id)
     {
-        var resultItem = await _todoRepository.Get(id);
-        if (resultItem == null)
-            return NotFound();
-        return Ok(resultItem);
+        try
+        {
+            return Ok(await _todoRepository.Get(id));
+        }
+        catch (ItemNotFound e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
-    // todo how to know if it is found for void methods
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] ToDoItem updatedItem)
     {
-        await _todoRepository.Replace(id, updatedItem);
+        try
+        {
+            await _todoRepository.Replace(id, updatedItem);
+        }
+        catch (ItemNotFound e)
+        {
+            return NotFound(e.Message);
+        }
+        
         return NoContent();
-        //return resultItem == null ? NotFound() : NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _todoRepository.Delete(id);
+        try
+        {
+            await _todoRepository.Delete(id);
+        }
+        catch (ItemNotFound e)
+        {
+            return NotFound(e.Message);
+        }
+
         return NoContent();
-        //return itemToDelete == null ? StatusCode(StatusCodes.Status500InternalServerError) : NoContent();
     }
 
 }
