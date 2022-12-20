@@ -1,4 +1,5 @@
-﻿using ToDoApplication.Models;
+﻿using ToDoApplication.Exceptions;
+using ToDoApplication.Models;
 
 namespace ToDoApplication.DataStorage;
 
@@ -24,19 +25,23 @@ public class InMemoryDataStorage : IDataStorage
 
     public Task<ToDoItem> Get(Guid id)
     {
-        return !_toDoItemsDictionary.ContainsKey(id) ? null : Task.FromResult(_toDoItemsDictionary[id]);
+        return !_toDoItemsDictionary.ContainsKey(id)
+            ? throw new ItemNotFound($"Item with Id {id} was not found in memory")
+            : Task.FromResult(_toDoItemsDictionary[id]);
     }
 
     public Task Replace(Guid id, ToDoItem updatedItem)
     {
-        if (!_toDoItemsDictionary.ContainsKey(id)) return null;
+        if (!_toDoItemsDictionary.ContainsKey(id))
+            throw new ItemNotFound($"Item with Id {id} could not be replaced as it was not found in memory");
         _toDoItemsDictionary[id] = updatedItem;
         return Task.FromResult(_toDoItemsDictionary[id]);
     }
 
     public Task Delete(Guid id)
     {
-        if (!_toDoItemsDictionary.ContainsKey(id)) return null;
+        if (!_toDoItemsDictionary.ContainsKey(id))
+            throw new ItemNotFound($"Item with Id {id} could not be deleted as it was not found in memory");
         var removedToDoItem = _toDoItemsDictionary[id];
         _toDoItemsDictionary.Remove(id);
         return Task.FromResult(removedToDoItem);
