@@ -119,7 +119,8 @@ namespace APITests
 
             // Assert
             //Assert.AreEqual(toDoItem,result);
-            // todo use stub
+            // todo use stub. First, extract all the logic related to csv in ICsvFileManager and inject this interface in FileStorage. 
+            // todo then, crete a stub: CsvFileManagerStub with the behaviour we expect it to have, so that we can test
         }
 
         // todo should throw exc
