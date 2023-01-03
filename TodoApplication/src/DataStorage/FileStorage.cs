@@ -27,7 +27,6 @@ public class FileStorage : IDataStorage
 
     public async Task<ToDoItem> Get(Guid id)
     {
-        // todo is it ok to return null? maybe throw
         var toDoItem = await _fileManager.Get(id);
         if (toDoItem == null) 
             throw new ItemNotFound($"Item with Id {id} was not found in file");
@@ -36,7 +35,7 @@ public class FileStorage : IDataStorage
 
     public async Task Replace(Guid id, ToDoItem updatedItem)
     {
-        if (_fileManager.Get(id) == null)
+        if (await _fileManager.Get(id) is null)
             throw new ItemNotFound($"Item could not be replaced as Id {id} was not found in file");
         await _fileManager.Replace(id, updatedItem);
     }
