@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using ToDoApplication.DataStorage;
+using ToDoApplication.Exceptions;
 using ToDoApplication.Models;
 using Assert = NUnit.Framework.Assert;
 
@@ -10,25 +12,20 @@ namespace APITests
 {
     public class FileStorageTests
     {
-        private IDataStorage _dataStorage;
-
-        // todo copy the input for the test and delete after testing so the data is the same
-        [SetUp]
-        public void SetUp()
-        {
-            _dataStorage = new FileStorage(Path.Combine(Directory.GetCurrentDirectory(), "ToDoItemsCsv.csv")); // todo question, how to use the path C:\source\My-repos\Mentoring\TodoApplication\Tests\ToDoItemsCsv.csv
-        }
-
         [Test]
         public async Task GetToDoItems_ShouldReturnAllItems()
         {
             // Arrange
+            var toDoItems = new List<ToDoItem>
+                { new(), new() };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            var toDoItems = await _dataStorage.GetToDoItems();
+            var result = await fileStorage.GetToDoItems();
 
             // Assert
-            Assert.IsNotEmpty(toDoItems);
+            Assert.AreEqual(toDoItems,result);
         }
 
         // todo why can't we use this guid
@@ -36,28 +33,33 @@ namespace APITests
         public async Task Get_ShouldReturnItem_IfFound()
         {
             // Arrange
-            var existingId = new Guid("7595022e-f390-4814-91ba-6db90550f46c");
+            var existingId = Guid.NewGuid();
             var toDoItem = new ToDoItem() {Id = existingId, Name = "string", IsCompleted = true};
-
+            var toDoItems = new List<ToDoItem>
+                { new(), toDoItem };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            var result = await _dataStorage.Get(existingId);
+            var result = await fileStorage.Get(existingId);
 
             // Assert
             Assert.AreEqual(toDoItem,result);
         }
 
         [Test]
-        public async Task Get_ShouldReturnNull_IfNotFound()
+        public void Get_ShouldThrowItemNotFoundException_IfNotFound()
         {
             // Arrange
             var nonExistingId = Guid.NewGuid();
+            var toDoItems = new List<ToDoItem>
+                { new(), new() };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            var result = await _dataStorage.Get(nonExistingId);
-
             // Assert
-            Assert.IsNull(result);
+            Assert.ThrowsAsync<ItemNotFound>(async () => await fileStorage.Get(nonExistingId));
         }
 
         [Test]
@@ -66,43 +68,53 @@ namespace APITests
             // Arrange
             var id = Guid.NewGuid();
             var toDoItem = new ToDoItem() { Id = id, Name = "string", IsCompleted = true };
+            var toDoItems = new List<ToDoItem>
+                { new(), new() };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            await _dataStorage.Add(toDoItem);
+            await fileStorage.Add(toDoItem);
 
             // Assert
-            Assert.AreEqual(toDoItem, _dataStorage.Get(id));
+            var result = toDoItems.SingleOrDefault(t => t.Id == id);
+            Assert.AreEqual(result,toDoItem);
         }
 
         [Test]
         public async Task Replace_ShouldReplaceInCsv_IfFound()
         {
             // Arrange
-            var existingId = new Guid("7595022e-f390-4814-91ba-6db90550f46c");
+            var existingId = Guid.NewGuid();
             var existingToDoItem = new ToDoItem() { Id = existingId, Name = "string", IsCompleted = true };
             var updatedToDoItem = new ToDoItem() { Id = existingId, Name = "updatedstring", IsCompleted = false };
+            var toDoItems = new List<ToDoItem>
+                { existingToDoItem, new() };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            var result = _dataStorage.Replace(existingId, updatedToDoItem);
+            await fileStorage.Replace(existingId, updatedToDoItem);
 
             // Assert
-            Assert.AreEqual(updatedToDoItem, result);
-            await _dataStorage.Replace(existingId, existingToDoItem);
+            var result = toDoItems.SingleOrDefault(t => t.Id == existingId);
+            Assert.AreEqual(updatedToDoItem,result);
         }
 
-        // todo should throw exception
         [Test]
-        public async Task Replace_ShouldReturnNull_IfNotFound()
+        public void Replace_ShouldThrowItemNotFoundException_IfNotFound()
         {
             // Arrange
             var nonExistingId = Guid.NewGuid();
-            var updatedToDoItem = new ToDoItem() { Id = nonExistingId, Name = "updatedstring", IsCompleted = false };
+            var updatedToDoItem = new ToDoItem() { Id = nonExistingId, Name = "updated string", IsCompleted = false };
+            var toDoItems = new List<ToDoItem>
+                { new(), new() };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            await _dataStorage.Replace(nonExistingId, updatedToDoItem);
-
             // Assert
-            //Assert.IsNull(result);
+            Assert.ThrowsAsync<ItemNotFound>(async () => await fileStorage.Replace(updatedToDoItem.Id, updatedToDoItem));
         }
 
         // todo how to assert this
@@ -110,33 +122,78 @@ namespace APITests
         public async Task Delete_ShouldRemoveFromFileStorage_IfFound()
         {
             // Arrange
-            var id = Guid.NewGuid();
-            var toDoItem = new ToDoItem() { Id = id, Name = "string", IsCompleted = true };
-            await _dataStorage.Add(toDoItem);
+            var idToDelete = Guid.NewGuid();
+            var toDoItems = new List<ToDoItem>
+                { new(), new(), new() { Id = idToDelete } };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            await _dataStorage.Delete(toDoItem.Id);
+            await fileStorage.Delete(idToDelete);
 
             // Assert
-            //Assert.AreEqual(toDoItem,result);
-            // todo use stub. First, extract all the logic related to csv in ICsvFileManager and inject this interface in FileStorage. 
-            // todo then, crete a stub: CsvFileManagerStub with the behaviour we expect it to have, so that we can test
+            var deletedItem = toDoItems.SingleOrDefault(t => t.Id == idToDelete);
+            Assert.IsNull(deletedItem);
+
+            //// todo use stub. First, extract all the logic related to csv in ICsvFileManager and inject this interface in FileStorage. 
+            //// todo then, crete a stub: CsvFileManagerStub with the behaviour we expect it to have, so that we can test
         }
 
-        // todo should throw exc
+        // todo async in this case? Method has to be void?
         [Test]
-        public async Task Delete_ShouldReturnNull_IfNotFound()
+        public void Delete_ShouldThrowItemNotFoundException_IfNotFound()
         {
             // Arrange
-            var id = Guid.NewGuid();
-            var toDoItem = new ToDoItem() { Id = id, Name = "string", IsCompleted = true };
+            var idToDelete = Guid.NewGuid();
+            var toDoItems = new List<ToDoItem>
+                { new(), new() };
+            var csvFileManagerStub = new CsvFileManagerStub(toDoItems);
+            var fileStorage = new FileStorage(csvFileManagerStub);
 
             // Act
-            await _dataStorage.Delete(toDoItem.Id);
-
             // Assert
-            //Assert.IsNull(result);
+            Assert.ThrowsAsync<ItemNotFound>( async () => await fileStorage.Delete(idToDelete));
         }
 
+        private class CsvFileManagerStub : ICsvFileManager
+        {
+            private readonly List<ToDoItem> _toDoItems;
+
+            public CsvFileManagerStub(List<ToDoItem> toDoItems)
+            {
+                _toDoItems = toDoItems;
+            }
+
+            public Task<List<ToDoItem>> GetToDoItems()
+            {
+                return Task.FromResult(_toDoItems);
+            }
+
+            public Task Add(ToDoItem newItem)
+            {
+                _toDoItems.Add(newItem);
+                return Task.CompletedTask;
+            }
+
+            public Task<ToDoItem> Get(Guid id)
+            {
+                return Task.FromResult(_toDoItems.SingleOrDefault(t => t.Id == id));
+            }
+
+            public Task Replace(Guid id, ToDoItem updatedItem)
+            {
+                for (var i = 0; i < _toDoItems.Count; i++)
+                    if (_toDoItems[i].Id == id)
+                        _toDoItems[i] = updatedItem;
+                return Task.CompletedTask;
+            }
+
+            public Task Delete(Guid id)
+            {
+                var itemToDelete = _toDoItems.SingleOrDefault(t => t.Id == id);
+                _toDoItems.Remove(itemToDelete);
+                return Task.CompletedTask;
+            }
+        }
     }
 }
