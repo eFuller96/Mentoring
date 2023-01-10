@@ -26,7 +26,6 @@ Parent classes should be easily substituted with their child classes without blo
 Clients should not be forced to depend upon interfaces that they do not use
 
 ### Tips
-- More interfaces - create client specific interfaces rather than one general interface
 - You shouldn't ever have a method throwing `NotImplementedException` - this will break the principle   
 
 ## Dependency Inversion
