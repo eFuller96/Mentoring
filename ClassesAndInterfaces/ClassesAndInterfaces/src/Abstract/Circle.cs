@@ -1,4 +1,6 @@
-﻿namespace ClassesAndInterfaces.Abstract;
+﻿using System;
+
+namespace ClassesAndInterfaces.Abstract;
 
 public class Circle : Shape
 {
