@@ -3,7 +3,7 @@ Asynchronous programming allows us to write non-blocking code so that it runs co
 It is incredibly important to write asynchronous code for both client application and server applications. From a user POV, they do not want to be staring at an unresponsive screen whilst something is happening in the background. We need to keep UI responsive. As for servers, we don't want it to be inefficient processing 1 request at a time. It needs to be scalable, and handle hundreds (or even thousands) of requests.
 
 ## Under the hood (ASP.NET Core)
-There is a pool of available *threads* available to the .NET runtime and it will use whatever is free. Available threads depends on the machine resources.
+There is a pool of *threads* available to the .NET runtime and it will use whatever is free. Available threads depends on the machine resources.
 > A thread is an execution path that can proceed independently of others
 
 As new API requests come in, an available thread will be allocated to the request to handle the work. These available threads come from a thread pool. Once there are no more threads left to allocate, the next request to come in will be *blocked* and now has to wait for one of the first requests to finish to free up a thread.
@@ -22,12 +22,18 @@ TPL is a .NET library which helps simplify working with concurrent and asynchron
 
 With the Task Parallel Library (TPL), we can share the resource more efficiently, by reusing threads. We can be alerted when some work is completed by subscribing to it.
 
-Provides us keywords such as `async` and `await`.
+It provides us keywords such as `async` and `await`. It hides all the complexity behind the `Task` operations, and makes it way more readable.
 
 ### Task
 A `Task` represents an asynchronous operation. It resembles a thread. `Task<TResult>` returns a value which we can access with the `.Result` property.
 
 We can `await` Tasks to free up a thread, and allow it to pick up other work.
+
+### async
+`async` marks a method as asynchronous, but this does not mean the code is! It _allows_ us to perform async operations in the method body.
+
+### await
+`await` marks a "continuation". You `await` a `Task`. It returns control to the caller of the async method, with a reference to ongoing work. "awaiting" the task validates no exceptions were thrown, and returns us the result from the task. You only need to await when you need the result.
 
 ## Tasks
 1. Pull down [this git repository](https://github.com/eFuller96/AsyncSubway.git)
