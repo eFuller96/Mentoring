@@ -28,7 +28,6 @@ namespace APITests
             Assert.AreEqual(toDoItems,result);
         }
 
-        // todo why can't we use this guid
         [Test]
         public async Task Get_ShouldReturnItem_IfFound()
         {
@@ -117,7 +116,6 @@ namespace APITests
             Assert.ThrowsAsync<ItemNotFound>(async () => await fileStorage.Replace(updatedToDoItem.Id, updatedToDoItem));
         }
 
-        // todo how to assert this
         [Test]
         public async Task Delete_ShouldRemoveFromFileStorage_IfFound()
         {

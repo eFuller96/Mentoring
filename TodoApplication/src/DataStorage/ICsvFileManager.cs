@@ -16,7 +16,6 @@ namespace ToDoApplication.DataStorage
     {
         private static string _fileName;
 
-        // todo where to put filename
         public CsvFileManager(string filename)
         {
             _fileName = filename;
@@ -43,10 +42,8 @@ namespace ToDoApplication.DataStorage
 
         public async Task<ToDoItem> Get(Guid id)
         {
-            // todo make async
-            var toDoItem = File.ReadLines(_fileName).Skip(1).SkipLast(1).Select(ParseToDoItem)
-                .SingleOrDefault(t => t.Id == id);
-            return toDoItem;
+            var toDoItems = await GetToDoItems();
+            return toDoItems.SingleOrDefault(toDoItem => toDoItem.Id == id);
         }
 
         public async Task Replace(Guid id, ToDoItem updatedItem)
@@ -65,12 +62,6 @@ namespace ToDoApplication.DataStorage
                 if (toDoItems[i].Id == id)
                     toDoItems.Remove(toDoItems[i]);
             await WriteCsv(toDoItems);
-        }
-
-        private static ToDoItem ParseToDoItem(string line)
-        {
-            var values = line.Split(',');
-            return new ToDoItem { Id = Guid.Parse(values[0]), Name = values[1], IsCompleted = Convert.ToBoolean(values[2]) };
         }
 
         private static async Task WriteCsv(IEnumerable<ToDoItem> toDoItems)
