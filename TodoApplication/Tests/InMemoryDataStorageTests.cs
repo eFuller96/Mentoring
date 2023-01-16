@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using NSubstitute;
 using NUnit.Framework;
 using ToDoApplication.DataStorage;
+using ToDoApplication.Exceptions;
 using ToDoApplication.Models;
 using Assert = NUnit.Framework.Assert;
 
@@ -102,18 +102,15 @@ namespace APITests
             Assert.AreEqual(updatedToDoItem,_dataStorage.Get(toDoItem.Id));
         }
 
-        // todo should throw exc
         [Test]
-        public async Task Replace_ShouldReturnNull_IfNotFound()
+        public void Replace_ShouldThrowItemNotFoundException_IfNotFound()
         {
             // Arrange
             var updatedToDoItem = new ToDoItem { Name = "updated name" };
 
             // Act
-            await _dataStorage.Replace(Guid.NewGuid(), updatedToDoItem);
-
             // Assert
-            //Assert.IsNull(result);
+            Assert.ThrowsAsync<ItemNotFound>(async () => await _dataStorage.Replace(Guid.NewGuid(), updatedToDoItem));
         }
 
         [Test]
@@ -146,17 +143,15 @@ namespace APITests
             Assert.IsEmpty(_dataStorage.GetToDoItems().Result);
         }
 
-        // todo should throw exc
         [Test]
-        public async Task Delete_ShouldReturnNull_IfNotFound()
+        public void Delete_ShouldThrowItemNotFoundException_IfNotFound()
         {
             // Arrange
-
+            var nonExistingId = Guid.NewGuid();
+            
             // Act
-            await _dataStorage.Delete(Guid.NewGuid());
-
             //Assert
-            //Assert.IsNull(result);
+            Assert.ThrowsAsync<ItemNotFound>(async () => await _dataStorage.Delete(nonExistingId));
         }
 
     }
