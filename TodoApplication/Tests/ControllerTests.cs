@@ -127,7 +127,6 @@ namespace APITests
             Assert.IsInstanceOf(typeof(NotFoundResult), result);
         }
 
-        // todo since it is not returning anything, how to arrange?
         [Test]
         public async Task Delete_MustReturn204HTTPStatus_IfDeleted()
         {
