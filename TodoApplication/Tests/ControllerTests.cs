@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using ToDoApplication.Controllers;
 using ToDoApplication.Exceptions;
 using ToDoApplication.Models;
@@ -105,11 +102,10 @@ namespace APITests
             await _todoRepository.Replace(_toDoItem.Id,_toDoItem);
 
             // Act
-            var result = await _todoController.Update(_toDoItem.Id, _toDoItem) as StatusCodeResult;
+            var result = await _todoController.Update(_toDoItem.Id, _toDoItem);
 
             //Assert
-            await _todoRepository.Received().Replace(_toDoItem.Id,_toDoItem);
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
+            Assert.IsInstanceOf(typeof(NoContentResult), result);
         }
 
         [Test]
@@ -145,13 +141,12 @@ namespace APITests
         public async Task Delete_MustReturn500HTTPStatus_IfNotItemNotFound()
         {
             // Arrange
-            //await _todoRepository.Delete(_toDoItem.Id);
 
             // Act
-            var result = await _todoController.Delete(_toDoItem.Id) as StatusCodeResult;
+            var result = await _todoController.Delete(_toDoItem.Id);
 
             //Assert
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
+            Assert.IsInstanceOf(typeof(NoContentResult), result);
         }
 
     }
