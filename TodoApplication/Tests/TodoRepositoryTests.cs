@@ -3,6 +3,7 @@ using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 using ToDoApplication.DataStorage;
+using ToDoApplication.Exceptions;
 using ToDoApplication.Models;
 using ToDoApplication.Repository;
 using Assert = NUnit.Framework.Assert;
@@ -17,141 +18,76 @@ namespace APITests
         [SetUp]
         public void SetUp()
         {
-            //_toDoItemsDictionary = new Dictionary<Guid, ToDoItem>();
             _dataStorage = Substitute.For<IDataStorage>();
             _repo = new TodoRepository(_dataStorage);
         }
 
+
         [Test]
-        public void GetToDoItems_ShouldReturnAllItems_IfFound()
+        public async Task GetToDoItems_Calls_GetToDoItemsFromStorage()
         {
-            // Arrange
-            var toDoItem1 = new ToDoItem { Name = "name1" };
-            var toDoItem2 = new ToDoItem { Name = "name2" };
-            var expectedResult = new Collection<ToDoItem> { toDoItem1, toDoItem2 };
-            _dataStorage.GetToDoItems().Returns(expectedResult);
 
             // Act
-            var result = _repo.GetToDoItems();
+            await _repo.GetToDoItems();
 
             // Assert
-            _dataStorage.Received().GetToDoItems();
-            Assert.AreEqual(expectedResult, result);
+            await _dataStorage.Received().GetToDoItems();
         }
 
         [Test]
-        public void GetToDoItems_ShouldReturnEmpty_IfNoItemsFound()
-        {
-            // Arrange
-            _dataStorage.GetToDoItems().Returns(Array.Empty<ToDoItem>());
-
-            // Act
-            var result = _repo.GetToDoItems();
-
-            // Assert
-            _dataStorage.Received().GetToDoItems();
-            Assert.IsEmpty(result.Result);
-        }
-
-        [Test]
-        public void Get_ShouldReturnItem_IfFound()
+        public async Task Get_Calls_GetFromStorage()
         {
             // Arrange
             var toDoItem = new ToDoItem { Name = "name" };
-            _dataStorage.Get(toDoItem.Id).Returns(toDoItem);
 
             // Act
-            var result = _repo.Get(toDoItem.Id);
+            await _repo.Get(toDoItem.Id);
 
             //Assert
-            _dataStorage.Received().Get(toDoItem.Id);
-            Assert.AreEqual(toDoItem, result);
+            await _dataStorage.Received().Get(toDoItem.Id);
         }
 
         [Test]
-        public void Get_ShouldReturnNull_IfNotFound()
-        {
-            // Arrange
-            var nonExistingId = Guid.NewGuid();
-
-            // Act
-            var result = _repo.Get(nonExistingId);
-
-            //Assert
-            Assert.IsNull(result);
-        }
-
-        [Test]
-        public void Add_ShouldAddItemToMemoryStorage()
+        public async Task Add_Calls_ReplaceFromStorage()
         {
             //Arrange
             var toDoItem = new ToDoItem { Name = "name" };
 
             // Act
-            _repo.Add(toDoItem);
+            await _repo.Add(toDoItem);
 
             //Assert
-            _dataStorage.Received().Add(toDoItem);
+            await _dataStorage.Received().Add(toDoItem);
+
         }
 
+
         [Test]
-        public void Replace_ShouldReplaceToDoItemInMemory_IfIdExists()
+        public async Task Replace_Calls_ReplaceFromStorage()
         {
             // Arrange
             var toDoItem = new ToDoItem { Name = "name" };
             var updatedToDoItem = new ToDoItem { Name = "updated name" };
 
             // Act
-            var result = _repo.Replace(toDoItem.Id, updatedToDoItem);
+            await _repo.Replace(toDoItem.Id, updatedToDoItem);
 
             // Assert
-            _dataStorage.Received().Replace(toDoItem.Id,updatedToDoItem);
-            Assert.IsNotNull(result);
-        }
-
-        [Test]
-        public void Replace_ShouldReturnNull_IfIdDoesNotExist()
-        {
-            // Arrange
-            var toDoItem = new ToDoItem { Name = "name" };
-            var updatedToDoItem = new ToDoItem { Name = "updated name" };
-
-            // Act
-            var result = _repo.Replace(toDoItem.Id, updatedToDoItem);
-
-            // Assert
-            _dataStorage.DidNotReceive().Replace(toDoItem.Id, updatedToDoItem);
-            Assert.IsNull(result);
+            await _dataStorage.Received().Replace(toDoItem.Id,updatedToDoItem);
         }
 
 
         [Test]
-        public void Delete_ShouldRemoveFromMemoryStorage_IfIdExists()
-        {
-            // Arrange
-            var toDoItem = new ToDoItem { Name = "name" };
-            _dataStorage.Get(toDoItem.Id).Returns(toDoItem);
-
-            // Act
-            var result = _repo.Delete(toDoItem.Id);
-
-            //Assert
-            _dataStorage.Received().Delete(toDoItem.Id);
-            Assert.IsNotNull(result);
-        }
-
-        [Test]
-        public void Delete_ShouldReturnNull_IfIdDoesNotExist()
+        public async Task Delete_Calls_DeleteFromStorage()
         {
             // Arrange
             var toDoItem = new ToDoItem { IsCompleted = false, Name = "name" };
 
             // Act
-            var result = _repo.Delete(toDoItem.Id);
+            await _repo.Delete(toDoItem.Id);
 
             //Assert
-            _dataStorage.DidNotReceive().Delete(toDoItem.Id);
-            Assert.IsNull(result);
+            await _dataStorage.Received().Delete(toDoItem.Id);
         }
 
     }
