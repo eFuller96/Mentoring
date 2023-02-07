@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using ToDoApplication.DataStorage;
 using ToDoApplication.Exceptions;
@@ -63,15 +64,14 @@ namespace APITests
         }
 
         [Test]
-        public async Task Get_ShouldReturnNull_IfNotFound()
+        public void Get_ShouldThrowItemNotFoundException_IfNotFound()
         {
             // Arrange
             var id = Guid.NewGuid();
-            // Act
-            var result = await _dataStorage.Get(id);
 
+            // Act
             //Assert
-            Assert.IsNull(result);
+            Assert.ThrowsAsync<ItemNotFound>(async () => await _dataStorage.Get(id));
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace APITests
             await _dataStorage.Add(toDoItem);
 
             //Assert
-            Assert.AreEqual(toDoItem,_dataStorage.Get(toDoItem.Id));
+            Assert.AreEqual(toDoItem,await _dataStorage.Get(toDoItem.Id));
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace APITests
             await _dataStorage.Replace(toDoItem.Id, updatedToDoItem);
 
             // Assert
-            Assert.AreEqual(updatedToDoItem,_dataStorage.Get(toDoItem.Id));
+            Assert.AreEqual(updatedToDoItem, await _dataStorage.Get(toDoItem.Id));
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace APITests
 
             //Assert
             Assert.AreEqual(1, _dataStorage.GetToDoItems().Result.Count);
-            Assert.AreEqual(updatedToDoItem, _dataStorage.Get(toDoItem.Id));
+            Assert.AreEqual(updatedToDoItem, await _dataStorage.Get(toDoItem.Id));
         }
 
         [Test]
@@ -140,7 +140,7 @@ namespace APITests
             await _dataStorage.Delete(toDoItem.Id);
 
             //Assert
-            Assert.IsEmpty(_dataStorage.GetToDoItems().Result);
+            Assert.IsEmpty(await _dataStorage.GetToDoItems());
         }
 
         [Test]

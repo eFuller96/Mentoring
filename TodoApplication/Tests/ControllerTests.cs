@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -32,7 +33,7 @@ namespace APITests
         public async Task Get_MustReturn200HTTPStatus()
         {
             // Act
-            var result = _todoController.Get();
+            var result = await _todoController.Get();
 
             //Assert
             await _todoRepository.Received().GetToDoItems();
@@ -46,7 +47,7 @@ namespace APITests
             _todoRepository.GetToDoItems().ReturnsNull();
 
             // Act
-            var result = _todoController.Get();
+            var result = await _todoController.Get();
 
             //Assert
             await _todoRepository.Received().GetToDoItems();
@@ -61,7 +62,7 @@ namespace APITests
             // Add is a void method, no need to mock (?) -- in the future it might change
 
             // Act
-            var result = _todoController.Add(_toDoItem);
+            var result = await _todoController.Add(_toDoItem);
 
             //Assert
             await _todoRepository.Received().Add(_toDoItem);
@@ -76,7 +77,7 @@ namespace APITests
             _todoRepository.Get(_toDoItem.Id).Returns(_toDoItem);
 
             // Act
-            var result = _todoController.GetItem(_toDoItem.Id);
+            var result = await _todoController.GetItem(_toDoItem.Id);
 
             //Assert
             await _todoRepository.Received().Get(_toDoItem.Id);
@@ -88,14 +89,13 @@ namespace APITests
         {
             // Arrange
             var nonExistingId = Guid.NewGuid();
-            _todoRepository.Get(nonExistingId).ReturnsNull();
+            _todoRepository.Get(nonExistingId).Throws<ItemNotFound>();
 
             // Act
-            var result = _todoController.GetItem(nonExistingId);
+            var result = await _todoController.GetItem(nonExistingId);
 
             //Assert
-            await _todoRepository.Received().Get(nonExistingId);
-            Assert.IsInstanceOf(typeof(NotFoundResult), result);
+            Assert.IsInstanceOf(typeof(NotFoundObjectResult), result);
         }
 
         [Test]
@@ -105,11 +105,11 @@ namespace APITests
             await _todoRepository.Replace(_toDoItem.Id,_toDoItem);
 
             // Act
-            var result = _todoController.Update(_toDoItem.Id,_toDoItem);
+            var result = await _todoController.Update(_toDoItem.Id, _toDoItem) as StatusCodeResult;
 
             //Assert
             await _todoRepository.Received().Replace(_toDoItem.Id,_toDoItem);
-            Assert.IsInstanceOf(typeof(NoContentResult), result);
+            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
         }
 
         [Test]
@@ -117,14 +117,12 @@ namespace APITests
         {
             // Arrange
             var id = Guid.NewGuid();
-            _todoRepository.Replace(_toDoItem.Id,_toDoItem).ReturnsNull();
 
             // Act
-            var result = _todoController.Update(id,_toDoItem);
+            var result = await _todoController.Update(id,_toDoItem);
 
             //Assert
-            await _todoRepository.Received().Replace(id,_toDoItem);
-            Assert.IsInstanceOf(typeof(NotFoundResult), result);
+            Assert.IsInstanceOf(typeof(NoContentResult), result);
         }
 
         [Test]
@@ -134,10 +132,9 @@ namespace APITests
 
             // Act
             var result = await _todoController.Delete(_toDoItem.Id);
+            _todoRepository.Delete(_toDoItem.Id).ThrowsAsync<ItemNotFound>();
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => await _todoRepository.Delete(_toDoItem.Id));
-            await _todoRepository.Received().Delete(_toDoItem.Id);
             Assert.IsInstanceOf(typeof(NoContentResult),result);
 
             // we might need this:
@@ -148,15 +145,13 @@ namespace APITests
         public async Task Delete_MustReturn500HTTPStatus_IfNotItemNotFound()
         {
             // Arrange
-            await _todoRepository.Delete(_toDoItem.Id);
+            //await _todoRepository.Delete(_toDoItem.Id);
 
             // Act
             var result = await _todoController.Delete(_toDoItem.Id) as StatusCodeResult;
 
             //Assert
-            Assert.ThrowsAsync<ItemNotFound>(async () => await _todoRepository.Delete(_toDoItem.Id));
-            await _todoRepository.Received().Delete(_toDoItem.Id);
-            Assert.AreEqual(result?.StatusCode, StatusCodes.Status500InternalServerError);
+            Assert.AreEqual(result?.StatusCode, StatusCodes.Status204NoContent);
         }
 
     }

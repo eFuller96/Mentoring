@@ -14,9 +14,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ITodoRepository,TodoRepository>();
 // Circular dependency explained in Notes.md
 builder.Services.AddSingleton<IDictionary<Guid, ToDoItem>>(new Dictionary<Guid, ToDoItem>());
-builder.Services.AddSingleton<IDataStorage, FileStorage>();
+builder.Services.AddSingleton<IDataStorage, InMemoryDataStorage>();
 //builder.Services.AddSingleton<IDataStorage>(new FileStorage("ToDoItemsCsv.csv")); 
-builder.Services.AddSingleton<ICsvFileManager>(new CsvFileManager("ToDoItemsCsv.csv"));
+builder.Services.AddSingleton<IFileManager>(new FileManager("ToDoItemsCsv.csv"));
 
 
 var app = builder.Build();
