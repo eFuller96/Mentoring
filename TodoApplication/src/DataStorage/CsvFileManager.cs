@@ -44,8 +44,14 @@ namespace ToDoApplication.DataStorage
 
             var lines = csv.ToString().Split(Environment.NewLine);
 
-            await File.WriteAllLinesAsync(_fileName, lines);
+            await using var writer = new StreamWriter(_fileName, false);
+            foreach (var line in lines)
+            {
+                await writer.WriteLineAsync(line);
+            }
+            
         }
+//await File.AppendAllLinesAsync(_fileName, lines);
 
         //public async Task<List<ToDoItem>> GetToDoItems()
         //{
