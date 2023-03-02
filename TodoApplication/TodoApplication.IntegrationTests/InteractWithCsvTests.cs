@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Text;
 using ToDoApplication.DataStorage;
 using ToDoApplication.Models;
 using Assert = NUnit.Framework.Assert;
@@ -9,31 +10,21 @@ namespace TodoApplication.IntegrationTests
     public class InteractWithCsvTests
     {
         private string _fileName;
-        private string _fileCopy;
         private FileManager? _csvFileManager;
-        // todo TEST READ AND WRITE
-        // todo leave file copy and then change it for writing csv strings and compare it
 
-        // todo file copy for each test -dynamically (pretend running in parallel)
+
         [SetUp]
         public void SetUp()
         {
             _fileName = "ToDoItemsTest.csv";
-            _fileCopy = "ToDoItemsCopy.csv";
-            File.Copy(_fileName, _fileCopy);
-            _csvFileManager = new FileManager(_fileCopy);
+            _csvFileManager = new FileManager(_fileName);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            File.Delete(_fileCopy);
-        }
 
         [Test]
         public async Task ReadToDoItemsFromFile()
         {
-            var toDoItems = await File.ReadAllLinesAsync(_fileCopy);
+            var toDoItems = await File.ReadAllLinesAsync(_fileName);
 
             var result = await _csvFileManager.ReadToDoItemsFromFile();
             var resultAsString = new List<string>() { "Id,Name,Is Completed" };
@@ -45,21 +36,26 @@ namespace TodoApplication.IntegrationTests
         [Test]
         public async Task WriteToDoItemsInFile()
         {
-            // todo use a manual list of todoitems instead of reading the same copy
-            var toDoItems = await File.ReadAllLinesAsync(_fileCopy);
-            var toDoItemsWithHeaders = toDoItems.ToList();
-            toDoItemsWithHeaders.Add("");
-            var expected = toDoItemsWithHeaders.ToArray();
-            var toDoItemsWithoutHeaders = toDoItems.Skip(1).ToList();
-            var toDoItemsList = toDoItemsWithoutHeaders.Select(doItem => doItem.Split(",")).Select(items => new ToDoItem() { Id = new Guid(items[0]), Name = items[1], IsCompleted = Convert.ToBoolean(items[2]) }).ToList();
+            var toDoItems = new List<ToDoItem>()
+            {
+                new()
+                    { Id = new Guid("7595022e-f390-4814-91ba-6db90550f46c"), Name = "string", IsCompleted = true },
+                new()
+                    { Id = new Guid("dbfddefd-bdeb-4e5e-90bd-bccf865b6068"), Name = "update", IsCompleted = true },
+                new()
+                    { Id = new Guid("eb22bf2c-a4aa-420d-a2c5-c3cfcb70b8bd"), Name = "string", IsCompleted = true },
+                new()
+                    { Id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"), Name = "string", IsCompleted = true },
+            };
+            var expectedList = new List<string>() { "Id,Name,Is Completed" };
+            expectedList.AddRange(toDoItems.Select(toDoItem => $"{toDoItem.Id},{toDoItem.Name},{toDoItem.IsCompleted}"));
+            expectedList.Add("");
+            var expectedResult = expectedList.ToArray();
 
+            await _csvFileManager.WriteToDoItemsInFile(toDoItems);
+            var result = await File.ReadAllLinesAsync(_fileName);
 
-            await _csvFileManager.WriteToDoItemsInFile(toDoItemsList);
-
-            var result = await File.ReadAllLinesAsync(_fileCopy);
-
-
-            Assert.AreEqual(result, expected);
+            Assert.AreEqual(expectedResult, result);
         }
 
     }
