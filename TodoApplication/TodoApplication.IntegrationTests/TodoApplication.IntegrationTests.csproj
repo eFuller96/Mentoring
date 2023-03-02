@@ -9,14 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="EmptyCsv.csv" />
     <None Remove="ToDoItemsTest.csv" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="EmptyCsv.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="ToDoItemsTest.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
