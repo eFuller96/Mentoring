@@ -7,7 +7,7 @@ using Assert = NUnit.Framework.Assert;
 namespace TodoApplication.IntegrationTests
 {
     [TestClass]
-    public class InteractWithCsvTests
+    public class InteractWithCsvIntegrationTests
     {
         private string _fileName;
         private FileManager? _csvFileManager;

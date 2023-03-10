@@ -5,6 +5,7 @@ using Flurl;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Newtonsoft.Json;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -39,7 +40,7 @@ public class AcceptanceTestsFixture : WebApplicationFactory<Program>
                     }));
     }
 
-    public async Task<TResponse> DoRequest<TResponse>(Url url, HttpMethod method, HttpContent? body = null)
+    public async Task<HttpResponseMessage> DoRequest(Url url, HttpMethod method, HttpContent? body = null)
     {
         using var httpRequestMessage = new HttpRequestMessage(method, url);
         if (body != null)
@@ -48,11 +49,6 @@ public class AcceptanceTestsFixture : WebApplicationFactory<Program>
         }
 
         using var httpClient = CreateClient();
-        using var response = await httpClient.SendAsync(httpRequestMessage);
-
-        await using var responseStream = await response.Content.ReadAsStreamAsync();
-        using StreamReader streamReader = new StreamReader(responseStream);
-
-        return JsonConvert.DeserializeObject<TResponse>(await streamReader.ReadToEndAsync());
+        return await httpClient.SendAsync(httpRequestMessage);
     }
 }
