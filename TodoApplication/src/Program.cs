@@ -2,6 +2,7 @@ using ToDoApplication.DataStorage;
 using ToDoApplication.Models;
 using ToDoApplication.Repository;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,8 +15,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ITodoRepository,TodoRepository>();
 // Circular dependency explained in Notes.md
 builder.Services.AddSingleton<IDictionary<Guid, ToDoItem>>(new Dictionary<Guid, ToDoItem>());
-builder.Services.AddSingleton<IDataStorage, InMemoryDataStorage>();
-//builder.Services.AddSingleton<IDataStorage>(new FileStorage("ToDoItemsCsv.csv")); 
+//builder.Services.AddSingleton<IDataStorage, InMemoryDataStorage>();
+builder.Services.AddSingleton<IDataStorage, FileStorage>();
 builder.Services.AddSingleton<IFileManager>(new FileManager("ToDoItemsCsv.csv"));
 
 
@@ -35,3 +36,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+public partial class Program { }
