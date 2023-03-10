@@ -28,7 +28,7 @@ public class ToDoListController : ControllerBase
     public async Task<IActionResult> Add([FromBody] ToDoItem newItem)
     {
         await _todoRepository.Add(newItem);
-        var location = Flurl.Url.Combine("http://localhost:7206/TodoList", "Get")
+        var location = new Url("http://localhost:7206/TodoList")
             .SetQueryParam("id", newItem.Id.ToString());
         return Created(location, newItem);
     }
