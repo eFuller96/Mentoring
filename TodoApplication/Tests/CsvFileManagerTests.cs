@@ -14,7 +14,6 @@ namespace APITests
     {
         FileManager _fileManager;
 
-        // todo how to test filename exists - we are relying on gettodoitems will use it
 
         [Test]
         public void CsvFileManager_ShouldBeInitializedWithACsv()
