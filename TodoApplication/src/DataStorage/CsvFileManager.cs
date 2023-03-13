@@ -4,7 +4,7 @@ using ToDoApplication.Models;
 namespace ToDoApplication.DataStorage
 {
     public interface IFileManager
-    // todo Read and write for csv 
+
     {
         Task<List<ToDoItem>> ReadToDoItemsFromFile();
         Task WriteToDoItemsInFile(IEnumerable<ToDoItem> toDoItems);
@@ -51,44 +51,5 @@ namespace ToDoApplication.DataStorage
             }
             
         }
-//await File.AppendAllLinesAsync(_fileName, lines);
-
-        //public async Task<List<ToDoItem>> GetToDoItems()
-        //{
-        //    return await ReadToDoItemsFromFile();
-        //}
-
-        //public async Task Add(ToDoItem newItem)
-        //{
-        //    var toDoItems = await ReadToDoItemsFromFile();
-        //    toDoItems.Add(newItem);
-        //    await WriteToDoItemsInFile(toDoItems);
-        //}
-
-        //public async Task<ToDoItem> Get(Guid id)
-        //{
-        //    // todo move this logic to file storage
-        //    var toDoItems = await ReadToDoItemsFromFile();
-        //    return toDoItems.SingleOrDefault(toDoItem => toDoItem.Id == id);
-        //}
-
-        //public async Task Replace(Guid id, ToDoItem updatedItem)
-        //{
-        //    var toDoItems = await ReadToDoItemsFromFile();
-        //    for (var i = 0; i < toDoItems.Count; i++)
-        //        if (toDoItems[i].Id == id)
-        //            toDoItems[i] = updatedItem;
-        //    await WriteToDoItemsInFile(toDoItems);
-        //}
-
-        //public async Task Delete(Guid id)
-        //{
-        //    var toDoItems = await ReadToDoItemsFromFile();
-        //    for (var i = 0; i < toDoItems.Count; i++)
-        //        if (toDoItems[i].Id == id)
-        //            toDoItems.Remove(toDoItems[i]);
-        //    await WriteToDoItemsInFile(toDoItems);
-        //}
-
     }
 }
