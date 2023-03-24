@@ -39,3 +39,15 @@ Entity Framework is a Microsoft ORM tool for .NET applications. It enables devel
   - Allows developers to configure the Entity Framework Model
 - Migration
   - Built-in commands for creating and managing database migrations
+
+### DbContext
+Manages the connections to the database. Represents a database "session" - should use within a `using` statement to let .NET safely dispose of the database connection afterwards. Not secure to not dispose!!! 
+
+## Steps
+
+1. Install SQLServerExpress onto your machine
+1. Open up the skeleton EntityFramework solution (in Mentoring repository in GitHub)
+1. Install EntityFramework nuget package
+1. Create a `MovieContext` class inheriting `DbContext`
+  - This represents a database session
+1. Add your connection string into appsettings.Development.json
