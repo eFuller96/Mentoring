@@ -39,3 +39,29 @@ Entity Framework is a Microsoft ORM tool for .NET applications. It enables devel
   - Allows developers to configure the Entity Framework Model
 - Migration
   - Built-in commands for creating and managing database migrations
+  - Built-in commands for creating and managing database migrations
+
+### DbContext
+DbContext associates with a Model and handles running queries. It is registered with a connection string to your database. Represents a database "session" - should use within a `using` statement to let .NET safely dispose of the database connection afterwards.
+
+## Steps
+
+1. Install SQLServerExpress onto your machine
+    - Includes a LocalDB feature - this will put a minimal set of files necessary to start the SQL Server Database Engine
+1. Test you can connect to your localdb instance
+    - `Server=(localdb)\MSSQLLocalDB;Integrated Security=true`
+    - Windows auth will work as it was installed on your user account
+1. Open up the skeleton EntityFramework solution (in Mentoring repository in GitHub)
+1. Install EntityFramework and EntiteFrameworkCore.SqlServer nuget packages
+1. Create a `MovieContext` class inheriting `DbContext`
+    - This represents a database session
+1. Add your connection string into appsettings.Development.json
+1. Register the database connection context in Program.cs by running: 
+    ```c#
+    builder.Services.AddDbContext<YourDbContextTypeHere>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("YourConnectionStringHere")));   
+    ```
+1. Run the PMC (Package Manager Console) command `Add-Migration -Name <someName> -Context <YourDbContextType>,`
+    - Creates migration script based on your entity framework models
+1. Run the PMC command `update-database`
+     - This will apply your migration scripts
