@@ -1,20 +1,16 @@
 using System.Net;
-using System.Security.Cryptography;
 using System.Text;
 using Flurl;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ToDoApplication.Models;
 using TrenitaliaRealTimeAdapter.Acceptance.Tests;
-using static System.Net.WebRequestMethods;
 
 namespace TodoApplication.AcceptanceTests
 {
-    public class Tests
+    public class ToDoItemsInCsvAcceptanceTests
     {
 
-        private readonly List<ToDoItem> _toDoItems = new List<ToDoItem>()
+        private readonly List<ToDoItem> _toDoItems = new()
         {
             new()
                 { Id = new Guid("7595022e-f390-4814-91ba-6db90550f46c"), Name = "string", IsCompleted = true },
@@ -43,7 +39,6 @@ namespace TodoApplication.AcceptanceTests
             Assert.That(result,Is.EqualTo(_toDoItems));
         }
 
-        // happy path
         [Test]
         public async Task Get_from_file_storage_csv()
         {
@@ -57,7 +52,17 @@ namespace TodoApplication.AcceptanceTests
             Assert.That(result, Is.EqualTo(_toDoItems.First()));
         }
 
-        // happy path
+        [Test]
+        public async Task Get_NonExistingItem_from_file_storage_csv()
+        {
+            var acceptanceTestFixture = new AcceptanceTestsFixture();
+            var baseUrl = "http://localhost:7206/TodoList/";
+            var url = new Url($"{baseUrl}{Guid.NewGuid()}");
+            var response = await acceptanceTestFixture.DoRequest(url, HttpMethod.Get);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
         [Test]
         public async Task Delete_from_file_storage_csv()
         {
@@ -70,10 +75,21 @@ namespace TodoApplication.AcceptanceTests
         }
 
         [Test]
-        // todo how to post
+        public async Task Delete_NonExistingItem_from_file_storage_csv()
+        {
+            var acceptanceTestFixture = new AcceptanceTestsFixture();
+            var baseUrl = "http://localhost:7206/TodoList/";
+            var nonExistingToDoItem = new ToDoItem() { Id = Guid.NewGuid(), Name = "name", IsCompleted = false };
+            var url = new Url($"{baseUrl}{nonExistingToDoItem.Id}");
+            var response = await acceptanceTestFixture.DoRequest(url, HttpMethod.Delete);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
         public async Task Add_to_file_storage_csv()
         {
-            var acceptanceTestFixture = new AcceptanceTestsFixture(); // registration csv
+            var acceptanceTestFixture = new AcceptanceTestsFixture();
             var url = new Url("http://localhost:7206/TodoList");
             var body = new StringContent(JsonConvert.SerializeObject(_toDoItems.First()),Encoding.UTF8,"application/json");
             var response = await acceptanceTestFixture.DoRequest(url, HttpMethod.Post, body);
@@ -81,16 +97,29 @@ namespace TodoApplication.AcceptanceTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         }
 
-        // happy path
         [Test]
         public async Task Update_in_file_storage_csv()
         {
             var acceptanceTestFixture = new AcceptanceTestsFixture();
             var baseUrl = "http://localhost:7206/TodoList/";
-            var url = new Url($"{baseUrl}{_toDoItems.ElementAt(2)}");
+            var url = new Url($"{baseUrl}{_toDoItems.ElementAt(2).Id}");
             var body = new StringContent(JsonConvert.SerializeObject(_toDoItems.First()), Encoding.UTF8, "application/json");
-            var response = await acceptanceTestFixture.DoRequest(url, HttpMethod.Put,body);
-            
+            var response = await acceptanceTestFixture.DoRequest(url, HttpMethod.Put, body);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        }
+
+        [Test]
+        public async Task Update_NonExistingItem_in_file_storage_csv()
+        {
+            var acceptanceTestFixture = new AcceptanceTestsFixture();
+            var baseUrl = "http://localhost:7206/TodoList/";
+            var nonExistingToDoItem = new ToDoItem() { Id = Guid.NewGuid(), Name = "name", IsCompleted = false };
+            var url = new Url($"{baseUrl}{nonExistingToDoItem.Id}");
+            var body = new StringContent(JsonConvert.SerializeObject(nonExistingToDoItem), Encoding.UTF8, "application/json");
+            var response = await acceptanceTestFixture.DoRequest(url, HttpMethod.Put, body);
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
         private async Task<TResponse> DeserializeResponse<TResponse>(HttpResponseMessage response)
