@@ -1,9 +1,13 @@
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using Flurl;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ToDoApplication.Models;
 using TrenitaliaRealTimeAdapter.Acceptance.Tests;
+using static System.Net.WebRequestMethods;
 
 namespace TodoApplication.AcceptanceTests
 {
@@ -39,6 +43,7 @@ namespace TodoApplication.AcceptanceTests
             Assert.That(result,Is.EqualTo(_toDoItems));
         }
 
+        // happy path
         [Test]
         public async Task Get_from_file_storage_csv()
         {
@@ -97,6 +102,7 @@ namespace TodoApplication.AcceptanceTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         }
 
+        // happy path
         [Test]
         public async Task Update_in_file_storage_csv()
         {
@@ -118,7 +124,7 @@ namespace TodoApplication.AcceptanceTests
             var url = new Url($"{baseUrl}{nonExistingToDoItem.Id}");
             var body = new StringContent(JsonConvert.SerializeObject(nonExistingToDoItem), Encoding.UTF8, "application/json");
             var response = await acceptanceTestFixture.DoRequest(url, HttpMethod.Put, body);
-
+            
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
