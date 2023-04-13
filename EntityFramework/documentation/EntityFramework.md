@@ -69,6 +69,15 @@ By default, the context manages connections to the database. The context opens a
 1. Run the PMC command `update-database`
      - This will apply your migration scripts
 
+Now we've set up the schema and models, we can now write the code to update and query the database
+
+1. Inject your `MovieContext` into the `MovieController`
+1. Implement a `[HttpPost]` method to add a movie into the database
+    - Check out [saving in EF](https://learn.microsoft.com/en-us/ef/core/saving/)
+1. Implement a `[HttpGet]` method to return all movies from the database
+    - Check out [querying in EF](https://learn.microsoft.com/en-us/ef/core/querying/)
+1. Implement a `[HttpDelete]` method to delete a movie for a given ID from the database
+
 ## Resources
 - [Migration scripts](https://www.entityframeworktutorial.net/efcore/entity-framework-core-migration.aspx) (in EF)
 - [DbContext](https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/)
