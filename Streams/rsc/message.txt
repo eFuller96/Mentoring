@@ -1,0 +1,2 @@
+Hello world!
+I am read in via a stream
